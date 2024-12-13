@@ -7,6 +7,7 @@ import { ValuePropositions } from "@/components/landing/ValuePropositions";
 import { HowItWorks } from "@/components/landing/HowItWorks";
 import { SocialProof } from "@/components/landing/SocialProof";
 import { ClosingSection } from "@/components/landing/ClosingSection";
+import { Zap } from "lucide-react";
 
 const Index = () => {
   return (
@@ -14,7 +15,10 @@ const Index = () => {
       {/* Navigation */}
       <nav className="container mx-auto px-4 py-6">
         <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-bold lowercase">zeno</h1>
+          <div className="flex items-center gap-2">
+            <Zap className="h-8 w-8 text-[#10b981]" />
+            <h1 className="text-2xl font-bold lowercase">zeno</h1>
+          </div>
           <div>
             <Link to="/login/recruiter">
               <Button className="bg-[#10b981] hover:bg-[#0d9668] text-black font-medium lowercase">
