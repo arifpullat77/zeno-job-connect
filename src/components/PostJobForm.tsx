@@ -24,7 +24,7 @@ const formSchema = z.object({
   location: z.string().min(2).max(100),
   description: z.string().min(10).max(1000),
   salary: z.string().min(2).max(100),
-  referralBonus: z.coerce.number().min(100),
+  referral_bonus: z.coerce.number().min(100),
 });
 
 export function PostJobForm() {
@@ -40,7 +40,7 @@ export function PostJobForm() {
       location: "",
       description: "",
       salary: "",
-      referralBonus: 100,
+      referral_bonus: 100,
     },
   });
 
@@ -149,7 +149,7 @@ export function PostJobForm() {
         />
         <FormField
           control={form.control}
-          name="referralBonus"
+          name="referral_bonus"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Referral Bonus ($)</FormLabel>

@@ -10,10 +10,10 @@ const MOCK_JOBS: Job[] = [
     location: "San Francisco, CA",
     description: "We're looking for a senior software engineer with 5+ years of experience in React and Node.js...",
     salary: "$150,000 - $200,000",
-    referralBonus: 5000,
+    referral_bonus: 5000,
     status: "open",
-    createdAt: new Date().toISOString(),
-    recruiterId: "1"
+    created_at: new Date().toISOString(),
+    recruiter_id: "1"
   },
   {
     id: "2",
@@ -22,10 +22,10 @@ const MOCK_JOBS: Job[] = [
     location: "New York, NY",
     description: "Seeking an experienced product manager to lead our flagship product...",
     salary: "$130,000 - $180,000",
-    referralBonus: 4000,
+    referral_bonus: 4000,
     status: "open",
-    createdAt: new Date().toISOString(),
-    recruiterId: "1"
+    created_at: new Date().toISOString(),
+    recruiter_id: "1"
   }
 ];
 
