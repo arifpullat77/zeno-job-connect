@@ -16,6 +16,7 @@ export type Database = {
           created_at: string | null
           id: string
           job_id: string | null
+          phone_number: string | null
           referral_id: string | null
           resume_url: string | null
           status: string | null
@@ -27,6 +28,7 @@ export type Database = {
           created_at?: string | null
           id?: string
           job_id?: string | null
+          phone_number?: string | null
           referral_id?: string | null
           resume_url?: string | null
           status?: string | null
@@ -38,6 +40,7 @@ export type Database = {
           created_at?: string | null
           id?: string
           job_id?: string | null
+          phone_number?: string | null
           referral_id?: string | null
           resume_url?: string | null
           status?: string | null

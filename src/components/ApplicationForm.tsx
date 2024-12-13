@@ -3,7 +3,6 @@ import { useToast } from "@/hooks/use-toast";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
-import { Textarea } from "./ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 
 interface ApplicationFormProps {
@@ -18,16 +17,47 @@ export function ApplicationForm({ jobId, referralId, onSuccess }: ApplicationFor
   const [formData, setFormData] = useState({
     name: "",
     email: "",
+    phoneNumber: "",
     resume: null as File | null,
-    coverLetter: "",
   });
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      if (file.type !== "application/pdf") {
+        toast({
+          title: "Invalid file type",
+          description: "Please upload a PDF file",
+          variant: "destructive",
+        });
+        return;
+      }
+      setFormData((prev) => ({ ...prev, resume: file }));
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     try {
-      // Create the application
+      let resumeUrl = "";
+      
+      if (formData.resume) {
+        const fileName = `${crypto.randomUUID()}-${formData.resume.name}`;
+        const { error: uploadError, data } = await supabase.storage
+          .from("resumes")
+          .upload(fileName, formData.resume);
+
+        if (uploadError) throw uploadError;
+        
+        const { data: { publicUrl } } = supabase.storage
+          .from("resumes")
+          .getPublicUrl(fileName);
+          
+        resumeUrl = publicUrl;
+      }
+
       const { error: applicationError } = await supabase
         .from("applications")
         .insert({
@@ -35,6 +65,8 @@ export function ApplicationForm({ jobId, referralId, onSuccess }: ApplicationFor
           referral_id: referralId,
           applicant_name: formData.name,
           applicant_email: formData.email,
+          phone_number: formData.phoneNumber,
+          resume_url: resumeUrl,
         });
 
       if (applicationError) throw applicationError;
@@ -60,7 +92,7 @@ export function ApplicationForm({ jobId, referralId, onSuccess }: ApplicationFor
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="space-y-2">
-        <Label htmlFor="name">Full Name</Label>
+        <Label htmlFor="name">Full Name *</Label>
         <Input
           id="name"
           required
@@ -70,7 +102,7 @@ export function ApplicationForm({ jobId, referralId, onSuccess }: ApplicationFor
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="email">Email</Label>
+        <Label htmlFor="email">Email *</Label>
         <Input
           id="email"
           type="email"
@@ -81,14 +113,34 @@ export function ApplicationForm({ jobId, referralId, onSuccess }: ApplicationFor
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="coverLetter">Cover Letter (Optional)</Label>
-        <Textarea
-          id="coverLetter"
-          value={formData.coverLetter}
-          onChange={(e) => setFormData((prev) => ({ ...prev, coverLetter: e.target.value }))}
-          className="h-32"
+        <Label htmlFor="phoneNumber">Phone Number *</Label>
+        <Input
+          id="phoneNumber"
+          type="tel"
+          required
+          value={formData.phoneNumber}
+          onChange={(e) => setFormData((prev) => ({ ...prev, phoneNumber: e.target.value }))}
         />
       </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="resume">Resume (PDF) *</Label>
+        <Input
+          id="resume"
+          type="file"
+          required
+          accept="application/pdf"
+          onChange={handleFileChange}
+          className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20"
+        />
+      </div>
+
+      {referralId && (
+        <div className="space-y-2">
+          <Label>Referred By</Label>
+          <Input value={referralId} disabled />
+        </div>
+      )}
 
       <Button type="submit" disabled={isSubmitting} className="w-full">
         {isSubmitting ? "Submitting..." : "Submit Application"}
