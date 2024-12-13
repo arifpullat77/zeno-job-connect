@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import Razorpay from 'https://esm.sh/razorpay@2.9.2'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -7,26 +8,23 @@ const corsHeaders = {
 }
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders })
   }
 
   try {
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature, user_id } = await req.json()
+    console.log('Verifying payment:', { razorpay_order_id, razorpay_payment_id, user_id })
     
     if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature || !user_id) {
       throw new Error('Missing required parameters')
     }
 
-    // Initialize Razorpay
-    const Razorpay = await import('https://esm.sh/razorpay@2.9.2')
-    const razorpay = new Razorpay.default({
+    const razorpay = new Razorpay({
       key_id: Deno.env.get('RAZORPAY_KEY_ID'),
       key_secret: Deno.env.get('RAZORPAY_KEY_SECRET'),
     })
 
-    // Verify signature
     const generated_signature = razorpay.webhooks.verifyPaymentSignature({
       order_id: razorpay_order_id,
       payment_id: razorpay_payment_id,
@@ -38,13 +36,13 @@ serve(async (req) => {
     }
 
     // Initialize Supabase client
-    const supabaseClient = createClient(
+    const supabaseAdmin = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
 
-    // Update subscription status
-    const { error: updateError } = await supabaseClient
+    console.log('Updating subscription status for user:', user_id)
+    const { error: updateError } = await supabaseAdmin
       .from('subscriptions')
       .update({ 
         status: 'active',
@@ -52,7 +50,10 @@ serve(async (req) => {
       })
       .eq('user_id', user_id)
 
-    if (updateError) throw updateError
+    if (updateError) {
+      console.error('Error updating subscription:', updateError)
+      throw updateError
+    }
 
     return new Response(
       JSON.stringify({ success: true }),

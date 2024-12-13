@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import Razorpay from 'https://esm.sh/razorpay@2.9.2'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -14,14 +15,14 @@ serve(async (req) => {
 
   try {
     const { user_id, plan } = await req.json()
+    console.log('Creating order for user:', user_id, 'plan:', plan)
     
     if (!user_id) {
       throw new Error('User ID is required')
     }
 
     // Initialize Razorpay
-    const Razorpay = await import('https://esm.sh/razorpay@2.9.2')
-    const razorpay = new Razorpay.default({
+    const razorpay = new Razorpay({
       key_id: Deno.env.get('RAZORPAY_KEY_ID'),
       key_secret: Deno.env.get('RAZORPAY_KEY_SECRET'),
     })
@@ -40,6 +41,7 @@ serve(async (req) => {
       },
     }
 
+    console.log('Creating Razorpay order with options:', options)
     const order = await razorpay.orders.create(options)
     console.log('Razorpay order created:', order)
 

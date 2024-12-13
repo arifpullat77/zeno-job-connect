@@ -51,19 +51,20 @@ export function SubscriptionStatus() {
 
       await loadScript('https://checkout.razorpay.com/v1/checkout.js');
 
-      const { data: { order }, error: orderError } = await supabase.functions.invoke('create-razorpay-order', {
+      const { data, error } = await supabase.functions.invoke('create-razorpay-order', {
         body: { user_id: session?.user?.id, plan }
       });
 
-      if (orderError) throw orderError;
+      if (error) throw error;
+      if (!data?.order) throw new Error('Failed to create order');
 
       const options = {
         key: import.meta.env.VITE_RAZORPAY_KEY_ID,
-        amount: order.amount,
-        currency: order.currency,
+        amount: data.order.amount,
+        currency: data.order.currency,
         name: "Zeno",
         description: `${plan === 'monthly' ? 'Monthly' : 'Yearly'} Subscription`,
-        order_id: order.id,
+        order_id: data.order.id,
         handler: async function (response: any) {
           try {
             const { error: verificationError } = await supabase.functions.invoke('verify-razorpay-payment', {
@@ -114,7 +115,7 @@ export function SubscriptionStatus() {
       if (error) throw error;
 
       toast.success('Your free trial has started!');
-      checkSubscription();
+      await checkSubscription();
     } catch (error) {
       console.error('Error starting trial:', error);
       toast.error('Failed to start trial. Please try again.');
@@ -141,13 +142,23 @@ export function SubscriptionStatus() {
               <span className="w-full border-t" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">Or</span>
+              <span className="bg-background px-2 text-muted-foreground">Or Subscribe Now</span>
             </div>
           </div>
-          <Button onClick={() => handlePayment('monthly')} variant="outline" className="w-full">
+          <Button 
+            onClick={() => handlePayment('monthly')} 
+            variant="outline" 
+            className="w-full"
+            disabled={processingPayment}
+          >
             Subscribe Monthly (₹9.99)
           </Button>
-          <Button onClick={() => handlePayment('yearly')} variant="outline" className="w-full">
+          <Button 
+            onClick={() => handlePayment('yearly')} 
+            variant="outline" 
+            className="w-full"
+            disabled={processingPayment}
+          >
             Subscribe Yearly (₹99.99)
           </Button>
         </CardContent>
@@ -183,10 +194,20 @@ export function SubscriptionStatus() {
                 <span className="bg-background px-2 text-muted-foreground">Optional</span>
               </div>
             </div>
-            <Button onClick={() => handlePayment('monthly')} variant="outline" className="w-full">
+            <Button 
+              onClick={() => handlePayment('monthly')} 
+              variant="outline" 
+              className="w-full"
+              disabled={processingPayment}
+            >
               Subscribe Monthly (₹9.99)
             </Button>
-            <Button onClick={() => handlePayment('yearly')} variant="outline" className="w-full">
+            <Button 
+              onClick={() => handlePayment('yearly')} 
+              variant="outline" 
+              className="w-full"
+              disabled={processingPayment}
+            >
               Subscribe Yearly (₹99.99)
             </Button>
           </div>
@@ -196,10 +217,18 @@ export function SubscriptionStatus() {
             <p className="text-sm text-red-500">
               Your trial has expired. Please subscribe to continue using the platform.
             </p>
-            <Button onClick={() => handlePayment('monthly')} className="w-full">
+            <Button 
+              onClick={() => handlePayment('monthly')} 
+              className="w-full"
+              disabled={processingPayment}
+            >
               Subscribe Monthly (₹9.99)
             </Button>
-            <Button onClick={() => handlePayment('yearly')} className="w-full">
+            <Button 
+              onClick={() => handlePayment('yearly')} 
+              className="w-full"
+              disabled={processingPayment}
+            >
               Subscribe Yearly (₹99.99)
             </Button>
           </div>
