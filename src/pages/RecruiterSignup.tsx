@@ -21,8 +21,6 @@ export default function RecruiterSignup() {
           toast.error("Please use a corporate email address. Gmail addresses are not allowed.");
           return;
         }
-      }
-      if (session) {
         navigate("/dashboard");
       }
     });
