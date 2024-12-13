@@ -45,9 +45,9 @@
     @apply bg-background text-foreground;
   }
 
-  /* Add styles for input text color */
-  input, textarea {
-    @apply text-white;
+  /* Update styles for input text color */
+  input, textarea, select {
+    @apply text-white placeholder:text-muted-foreground;
   }
 }
 

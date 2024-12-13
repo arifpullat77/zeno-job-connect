@@ -31,7 +31,25 @@ export default function ReferrerLogin() {
         <h1 className="text-2xl font-bold mb-8 lowercase">referrer login</h1>
         <Auth
           supabaseClient={supabase}
-          appearance={{ theme: ThemeSupa }}
+          appearance={{
+            theme: ThemeSupa,
+            style: {
+              input: {
+                color: 'white',
+                backgroundColor: 'hsl(var(--background))',
+                borderColor: 'hsl(var(--border))',
+              },
+              button: {
+                color: 'white',
+              },
+              anchor: {
+                color: 'white',
+              },
+              label: {
+                color: 'white',
+              },
+            },
+          }}
           providers={[]}
           redirectTo={`${window.location.origin}/dashboard`}
           onlyThirdPartyProviders={false}
