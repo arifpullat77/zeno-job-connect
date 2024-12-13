@@ -14,6 +14,8 @@ import Dashboard from "./pages/Dashboard";
 import Jobs from "./pages/Jobs";
 import JobDetails from "./pages/JobDetails";
 import Profile from "./pages/Profile";
+import PasswordReset from "./pages/PasswordReset";
+import UpdatePassword from "./pages/UpdatePassword";
 
 const queryClient = new QueryClient();
 
@@ -34,6 +36,8 @@ const App = () => (
             <Route path="/jobs" element={<Jobs />} />
             <Route path="/jobs/:id" element={<JobDetails />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/reset-password" element={<PasswordReset />} />
+            <Route path="/update-password" element={<UpdatePassword />} />
           </Routes>
         </BrowserRouter>
       </TooltipProvider>
