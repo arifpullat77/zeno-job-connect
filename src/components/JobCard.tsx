@@ -1,10 +1,11 @@
 import { Job } from "@/types";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
-import { MapPin, DollarSign, Share2 } from "lucide-react";
+import { MapPin, DollarSign, Share2, Send } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useSession } from "@supabase/auth-helpers-react";
+import { Link } from "react-router-dom";
 
 interface JobCardProps {
   job: Job;
@@ -103,12 +104,20 @@ export function JobCard({ job, showReferButton = true }: JobCardProps) {
                 <span className="text-sm font-medium">${job.referral_bonus} bonus</span>
               </div>
             </div>
-            {showReferButton && (
-              <Button onClick={handleShare} variant="outline" size="sm" className="border-[#10b981] text-[#10b981] hover:bg-[#10b981]/10">
-                <Share2 className="h-4 w-4 mr-2" />
-                Refer
-              </Button>
-            )}
+            <div className="flex items-center gap-2">
+              <Link to={`/jobs/${job.id}`}>
+                <Button variant="outline" size="sm" className="border-[#10b981] text-[#10b981] hover:bg-[#10b981]/10">
+                  <Send className="h-4 w-4 mr-2" />
+                  Apply
+                </Button>
+              </Link>
+              {showReferButton && (
+                <Button onClick={handleShare} variant="outline" size="sm" className="border-[#10b981] text-[#10b981] hover:bg-[#10b981]/10">
+                  <Share2 className="h-4 w-4 mr-2" />
+                  Refer
+                </Button>
+              )}
+            </div>
           </div>
         </div>
       </CardContent>
