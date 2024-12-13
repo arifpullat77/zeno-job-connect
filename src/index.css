@@ -44,6 +44,11 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  /* Add styles for input text color */
+  input, textarea {
+    @apply text-white;
+  }
 }
 
 .gradient-text {
