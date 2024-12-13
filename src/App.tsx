@@ -13,6 +13,7 @@ import ReferrerSignup from "./pages/ReferrerSignup";
 import Dashboard from "./pages/Dashboard";
 import Jobs from "./pages/Jobs";
 import JobDetails from "./pages/JobDetails";
+import Profile from "./pages/Profile";
 
 const queryClient = new QueryClient();
 
@@ -32,6 +33,7 @@ const App = () => (
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/jobs" element={<Jobs />} />
             <Route path="/jobs/:id" element={<JobDetails />} />
+            <Route path="/profile" element={<Profile />} />
           </Routes>
         </BrowserRouter>
       </TooltipProvider>
