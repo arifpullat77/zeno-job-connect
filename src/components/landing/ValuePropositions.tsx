@@ -18,7 +18,7 @@ export const ValuePropositions = () => {
               <li>Leverage networks of trusted professionals</li>
               <li>Pay only when you hire – no upfront fees!</li>
             </ul>
-            <Link to="/signup/recruiter">
+            <Link to="/signup/recruiter" className="block mt-6">
               <Button className="w-full bg-primary hover:bg-primary/90 text-white lowercase">
                 post your first job
               </Button>
@@ -37,7 +37,7 @@ export const ValuePropositions = () => {
               <li>Track who applies through your personalized links</li>
               <li>Earn rewards when your referral gets hired</li>
             </ul>
-            <Link to="/signup/referrer">
+            <Link to="/signup/referrer" className="block mt-6">
               <Button className="w-full bg-primary hover:bg-primary/90 text-white lowercase">
                 start earning today!
               </Button>
@@ -56,7 +56,7 @@ export const ValuePropositions = () => {
               <li>Stand out in a competitive hiring market</li>
               <li>Join teams where your skills truly shine</li>
             </ul>
-            <Link to="/jobs">
+            <Link to="/jobs" className="block mt-6">
               <Button className="w-full bg-primary hover:bg-primary/90 text-white lowercase">
                 find jobs now!
               </Button>
