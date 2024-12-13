@@ -6,10 +6,30 @@ import { ApplicantList } from "@/components/dashboard/ApplicantList";
 import { useSession } from "@supabase/auth-helpers-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
+import { SubscriptionStatus } from "@/components/subscription/SubscriptionStatus";
+import { useQuery } from "@tanstack/react-query";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Lock } from "lucide-react";
 
 export function RecruiterDashboard() {
   const session = useSession();
   const queryClient = useQueryClient();
+
+  const { data: subscription } = useQuery({
+    queryKey: ["subscription", session?.user?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('subscriptions')
+        .select('*')
+        .eq('user_id', session?.user?.id)
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!session?.user?.id,
+  });
 
   useEffect(() => {
     if (!session?.user?.id) return;
@@ -26,7 +46,6 @@ export function RecruiterDashboard() {
         },
         (payload) => {
           console.log("Application update:", payload);
-          // Refresh queries when data changes
           queryClient.invalidateQueries({ queryKey: ["applications"] });
         }
       )
@@ -36,6 +55,28 @@ export function RecruiterDashboard() {
       supabase.removeChannel(channel);
     };
   }, [session?.user?.id, queryClient]);
+
+  const isSubscriptionExpired = subscription?.status === 'expired' || 
+    (subscription?.status === 'trialing' && new Date(subscription?.trial_end) < new Date());
+
+  if (isSubscriptionExpired) {
+    return (
+      <Card className="w-full max-w-2xl mx-auto mt-8">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Lock className="h-5 w-5" />
+            Dashboard Locked
+          </CardTitle>
+          <CardDescription>
+            Your trial period has expired. Please subscribe to continue using the platform.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <SubscriptionStatus />
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Tabs defaultValue="jobs" className="w-full">
