@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { BriefcaseIcon, DollarSignIcon, UsersIcon } from "lucide-react";
+import { JobList } from "@/components/JobList";
 
 const Index = () => {
   return (
@@ -64,6 +65,12 @@ const Index = () => {
             </div>
           </Card>
         </div>
+      </div>
+
+      {/* Job Listings Section */}
+      <div className="container mx-auto px-4 py-16">
+        <h2 className="text-3xl font-bold text-center mb-8">Latest Opportunities</h2>
+        <JobList />
       </div>
 
       {/* Stats Section */}
