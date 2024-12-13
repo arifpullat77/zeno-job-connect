@@ -12,7 +12,7 @@ export default function RecruiterSignup() {
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === 'SIGNED_UP') {
+      if (event === 'SIGNED_IN' || event === 'SIGNED_UP') {
         const email = session?.user?.email;
         if (email && email.endsWith('@gmail.com')) {
           // Delete the user if they used a Gmail address
