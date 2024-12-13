@@ -8,6 +8,7 @@ import RecruiterLogin from "./pages/RecruiterLogin";
 import ReferrerLogin from "./pages/ReferrerLogin";
 import RecruiterSignup from "./pages/RecruiterSignup";
 import ReferrerSignup from "./pages/ReferrerSignup";
+import Dashboard from "./pages/Dashboard";
 
 const queryClient = new QueryClient();
 
@@ -23,6 +24,7 @@ const App = () => (
           <Route path="/login/referrer" element={<ReferrerLogin />} />
           <Route path="/signup/recruiter" element={<RecruiterSignup />} />
           <Route path="/signup/referrer" element={<ReferrerSignup />} />
+          <Route path="/dashboard" element={<Dashboard />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
