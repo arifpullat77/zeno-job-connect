@@ -4,33 +4,33 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --background: 275 43% 15%;
+    --foreground: 0 0% 100%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 275 43% 20%;
+    --card-foreground: 0 0% 100%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 275 43% 15%;
+    --popover-foreground: 0 0% 100%;
 
-    --primary: 142 84% 56%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 316 100% 75%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 275 43% 25%;
+    --secondary-foreground: 0 0% 100%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 275 43% 25%;
+    --muted-foreground: 0 0% 70%;
 
-    --accent: 142 84% 56%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 316 100% 75%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 142 84% 56%;
+    --border: 275 43% 25%;
+    --input: 275 43% 25%;
+    --ring: 316 100% 75%;
 
     --radius: 0.5rem;
   }
@@ -46,5 +46,13 @@
 }
 
 .gradient-text {
-  @apply bg-clip-text text-transparent bg-gradient-to-r from-emerald-500 to-lime-500;
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-[#FF69B4] to-[#FFB6C1];
+}
+
+.toggl-button {
+  @apply bg-[#FF69B4] hover:bg-[#FF69B4]/90 text-white font-medium px-8 py-3 rounded-full transition-all duration-300 hover:shadow-lg;
+}
+
+.toggl-secondary-button {
+  @apply bg-secondary/50 hover:bg-secondary/70 text-white font-medium px-8 py-3 rounded-full transition-all duration-300 backdrop-blur-sm;
 }

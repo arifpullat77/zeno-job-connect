@@ -3,15 +3,15 @@ import { BriefcaseIcon, Share2, UsersIcon, DollarSignIcon, ArrowRight } from "lu
 
 export const HowItWorks = () => {
   return (
-    <div className="bg-secondary py-24">
+    <div className="bg-secondary/30 backdrop-blur-sm py-24">
       <div className="container mx-auto px-4">
-        <h2 className="text-3xl font-bold text-center mb-16 gradient-text">
-          how it works
+        <h2 className="text-4xl font-bold text-center mb-16">
+          how it <span className="gradient-text">works</span>
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 max-w-5xl mx-auto">
           <div className="text-center space-y-4">
-            <div className="h-12 w-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
-              <BriefcaseIcon className="h-6 w-6 text-primary" />
+            <div className="h-12 w-12 bg-[#FF69B4]/10 rounded-full flex items-center justify-center mx-auto">
+              <BriefcaseIcon className="h-6 w-6 text-[#FF69B4]" />
             </div>
             <h3 className="font-semibold lowercase">post a job</h3>
             <p className="text-muted-foreground">Recruiters set a referral reward and publish openings</p>
@@ -39,7 +39,7 @@ export const HowItWorks = () => {
           </div>
         </div>
         <div className="text-center mt-12">
-          <Button className="bg-primary hover:bg-primary/90 text-white lowercase">
+          <Button className="toggl-button lowercase">
             see it in action <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
         </div>
