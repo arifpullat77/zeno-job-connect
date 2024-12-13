@@ -57,7 +57,17 @@ export function PostJobForm() {
     }
 
     try {
-      const jobData = {
+      // Ensure all required fields are present and correctly typed
+      const jobData: {
+        title: string;
+        company: string;
+        location: string;
+        description: string;
+        salary: string;
+        referral_bonus: number;
+        recruiter_id: string;
+        status: string;
+      } = {
         ...values,
         recruiter_id: session.user.id,
         status: 'open',
