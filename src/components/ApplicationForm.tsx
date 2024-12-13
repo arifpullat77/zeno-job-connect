@@ -18,6 +18,7 @@ export function ApplicationForm({ jobId, referralId, onSuccess }: ApplicationFor
     name: "",
     email: "",
     phoneNumber: "",
+    location: "",
     resume: null as File | null,
   });
 
@@ -66,6 +67,7 @@ export function ApplicationForm({ jobId, referralId, onSuccess }: ApplicationFor
           applicant_name: formData.name,
           applicant_email: formData.email,
           phone_number: formData.phoneNumber,
+          location: formData.location,
           resume_url: resumeUrl,
         });
 
@@ -120,6 +122,17 @@ export function ApplicationForm({ jobId, referralId, onSuccess }: ApplicationFor
           required
           value={formData.phoneNumber}
           onChange={(e) => setFormData((prev) => ({ ...prev, phoneNumber: e.target.value }))}
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="location">Location *</Label>
+        <Input
+          id="location"
+          required
+          value={formData.location}
+          onChange={(e) => setFormData((prev) => ({ ...prev, location: e.target.value }))}
+          placeholder="e.g., New York, NY"
         />
       </div>
 
