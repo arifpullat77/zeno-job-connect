@@ -24,7 +24,14 @@ export function ApplicantList() {
         .from("applications")
         .select(`
           *,
-          job:jobs(*)
+          job:jobs(*),
+          referral:referrals(
+            *,
+            referrer:profiles(
+              full_name,
+              email
+            )
+          )
         `)
         .eq("jobs.recruiter_id", session?.user?.id)
         .order("created_at", { ascending: false });
@@ -100,6 +107,7 @@ export function ApplicantList() {
             <TableHead>name</TableHead>
             <TableHead>email</TableHead>
             <TableHead>job</TableHead>
+            <TableHead>referrer</TableHead>
             <TableHead>resume</TableHead>
             <TableHead>status</TableHead>
             <TableHead>actions</TableHead>
@@ -111,6 +119,18 @@ export function ApplicantList() {
               <TableCell>{application.applicant_name}</TableCell>
               <TableCell>{application.applicant_email}</TableCell>
               <TableCell>{application.job?.title}</TableCell>
+              <TableCell>
+                {application.referral?.referrer ? (
+                  <div className="space-y-1">
+                    <div>{application.referral.referrer.full_name}</div>
+                    <div className="text-sm text-muted-foreground">
+                      {application.referral.referrer.email}
+                    </div>
+                  </div>
+                ) : (
+                  <span className="text-muted-foreground">Direct application</span>
+                )}
+              </TableCell>
               <TableCell>
                 <Button
                   variant="outline"
