@@ -6,16 +6,16 @@ import { Zap } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { useSession } from "@supabase/auth-helpers-react";
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  const session = useSession();
   const [userRole, setUserRole] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      
       if (!session) {
         navigate('/login/recruiter');
         return;
@@ -34,7 +34,7 @@ export default function Dashboard() {
     };
 
     checkAuth();
-  }, [navigate]);
+  }, [navigate, session]);
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
