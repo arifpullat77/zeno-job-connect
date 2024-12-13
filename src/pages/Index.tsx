@@ -6,9 +6,12 @@ import { SocialProof } from "@/components/landing/SocialProof";
 import { ClosingSection } from "@/components/landing/ClosingSection";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { Zap } from "lucide-react";
+import { Zap, LayoutDashboard } from "lucide-react";
+import { useSession } from "@supabase/auth-helpers-react";
 
 export default function Index() {
+  const session = useSession();
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <header className="container mx-auto px-4 py-6">
@@ -23,21 +26,32 @@ export default function Index() {
                 browse jobs
               </Button>
             </Link>
-            <Link to="/login/referrer">
-              <Button variant="ghost" className="hover:text-[#FF69B4] lowercase text-white">
-                referrer login
-              </Button>
-            </Link>
-            <Link to="/login/recruiter">
-              <Button variant="ghost" className="hover:text-[#FF69B4] lowercase text-white">
-                recruiter login
-              </Button>
-            </Link>
-            <Link to="/signup/recruiter">
-              <Button className="toggl-button lowercase">
-                try for free
-              </Button>
-            </Link>
+            {session ? (
+              <Link to="/dashboard">
+                <Button variant="ghost" className="hover:text-[#FF69B4] lowercase text-white">
+                  <LayoutDashboard className="mr-2 h-4 w-4" />
+                  dashboard
+                </Button>
+              </Link>
+            ) : (
+              <>
+                <Link to="/login/referrer">
+                  <Button variant="ghost" className="hover:text-[#FF69B4] lowercase text-white">
+                    referrer login
+                  </Button>
+                </Link>
+                <Link to="/login/recruiter">
+                  <Button variant="ghost" className="hover:text-[#FF69B4] lowercase text-white">
+                    recruiter login
+                  </Button>
+                </Link>
+                <Link to="/signup/recruiter">
+                  <Button className="toggl-button lowercase">
+                    try for free
+                  </Button>
+                </Link>
+              </>
+            )}
           </div>
         </nav>
       </header>
