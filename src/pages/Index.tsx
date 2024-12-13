@@ -19,7 +19,7 @@ export default function Index() {
       <header className="container mx-auto px-4 py-4 md:py-6">
         <nav className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Zap className="h-6 w-6 md:h-8 md:w-8 text-[#FF69B4]" />
+            <Zap className="h-6 w-6 md:h-8 md:w-8 text-[#10b981]" />
             <span className="text-xl md:text-2xl font-bold gradient-text">zeno</span>
           </div>
           
