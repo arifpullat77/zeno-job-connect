@@ -33,7 +33,7 @@ export default function RecruiterSignup() {
     <div className="container mx-auto px-4 py-8 max-w-md">
       <div className="flex items-center gap-2 mb-8">
         <Link to="/" className="flex items-center gap-2">
-          <Zap className="h-8 w-8 text-[#FF69B4]" />
+          <Zap className="h-8 w-8 text-[#66D19E]" />
           <span className="text-2xl font-bold lowercase">zeno</span>
         </Link>
       </div>
