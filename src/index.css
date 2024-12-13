@@ -4,32 +4,32 @@
 
 @layer base {
   :root {
-    --background: 0 0% 7%;
-    --foreground: 0 0% 98%;
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
 
-    --card: 0 0% 9%;
-    --card-foreground: 0 0% 98%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
 
-    --popover: 0 0% 9%;
-    --popover-foreground: 0 0% 98%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
 
     --primary: 142 84% 56%;
-    --primary-foreground: 0 0% 9%;
+    --primary-foreground: 210 40% 98%;
 
-    --secondary: 0 0% 13%;
-    --secondary-foreground: 0 0% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
 
-    --muted: 0 0% 13%;
-    --muted-foreground: 0 0% 63.9%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
 
     --accent: 142 84% 56%;
-    --accent-foreground: 0 0% 9%;
+    --accent-foreground: 222.2 47.4% 11.2%;
 
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive-foreground: 210 40% 98%;
 
-    --border: 0 0% 14.9%;
-    --input: 0 0% 14.9%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
     --ring: 142 84% 56%;
 
     --radius: 0.5rem;
@@ -40,17 +40,11 @@
   * {
     @apply border-border;
   }
-
   body {
     @apply bg-background text-foreground;
-  }
-
-  /* Update styles for input text color */
-  input, textarea, select {
-    @apply text-white placeholder:text-muted-foreground;
   }
 }
 
 .gradient-text {
-  @apply bg-clip-text text-transparent bg-gradient-to-r from-[#10b981] to-[#84cc16];
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-emerald-500 to-lime-500;
 }
