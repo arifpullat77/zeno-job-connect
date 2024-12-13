@@ -5,61 +5,71 @@ import { JobList } from "@/components/JobList";
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
+    <div className="min-h-screen bg-background">
+      {/* Navigation */}
+      <nav className="container mx-auto px-4 py-6">
+        <div className="flex justify-between items-center">
+          <h1 className="text-2xl font-bold">Zeno</h1>
+          <div className="flex gap-8">
+            <a href="#" className="text-foreground/80 hover:text-foreground">for creators</a>
+            <a href="#" className="text-foreground/60 hover:text-foreground">for brands</a>
+          </div>
+          <Button className="bg-[#10b981] hover:bg-[#0d9668] text-black font-medium">
+            get started
+          </Button>
+        </div>
+      </nav>
+
       {/* Hero Section */}
-      <div className="container mx-auto px-4 py-16">
-        <div className="text-center max-w-3xl mx-auto">
-          <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
-            Connect Talent with Opportunities
+      <div className="container mx-auto px-4 py-32">
+        <div className="text-center max-w-4xl mx-auto space-y-8">
+          <p className="text-sm uppercase tracking-wider text-foreground/60">the creator-only club</p>
+          <h1 className="text-5xl md:text-7xl font-bold leading-tight">
+            where you're paid<br />
+            for <span className="gradient-text">creating</span>
           </h1>
-          <p className="text-xl text-gray-600 mb-8">
-            Join Zeno - The professional referral platform that rewards you for connecting great talent with amazing opportunities.
-          </p>
-          <div className="flex gap-4 justify-center">
-            <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
-              Post a Job
-            </Button>
-            <Button size="lg" variant="outline">
-              Browse Jobs
+          <div className="pt-8">
+            <Button size="lg" className="bg-[#10b981] hover:bg-[#0d9668] text-black font-medium px-8 py-6 text-lg">
+              get started
             </Button>
           </div>
         </div>
       </div>
 
       {/* Features Section */}
-      <div className="container mx-auto px-4 py-16">
+      <div className="container mx-auto px-4 py-32">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <Card className="p-6">
+          <Card className="bg-secondary border-0 p-6">
             <div className="flex flex-col items-center text-center">
-              <div className="h-12 w-12 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-                <BriefcaseIcon className="h-6 w-6 text-blue-600" />
+              <div className="h-12 w-12 bg-[#10b981]/10 rounded-full flex items-center justify-center mb-4">
+                <BriefcaseIcon className="h-6 w-6 text-[#10b981]" />
               </div>
               <h3 className="text-xl font-semibold mb-2">Post Jobs</h3>
-              <p className="text-gray-600">
+              <p className="text-foreground/60">
                 Create detailed job listings with competitive referral rewards
               </p>
             </div>
           </Card>
 
-          <Card className="p-6">
+          <Card className="bg-secondary border-0 p-6">
             <div className="flex flex-col items-center text-center">
-              <div className="h-12 w-12 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-                <UsersIcon className="h-6 w-6 text-blue-600" />
+              <div className="h-12 w-12 bg-[#10b981]/10 rounded-full flex items-center justify-center mb-4">
+                <UsersIcon className="h-6 w-6 text-[#10b981]" />
               </div>
               <h3 className="text-xl font-semibold mb-2">Refer Talent</h3>
-              <p className="text-gray-600">
+              <p className="text-foreground/60">
                 Share opportunities and track your referrals easily
               </p>
             </div>
           </Card>
 
-          <Card className="p-6">
+          <Card className="bg-secondary border-0 p-6">
             <div className="flex flex-col items-center text-center">
-              <div className="h-12 w-12 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-                <DollarSignIcon className="h-6 w-6 text-blue-600" />
+              <div className="h-12 w-12 bg-[#10b981]/10 rounded-full flex items-center justify-center mb-4">
+                <DollarSignIcon className="h-6 w-6 text-[#10b981]" />
               </div>
               <h3 className="text-xl font-semibold mb-2">Earn Rewards</h3>
-              <p className="text-gray-600">
+              <p className="text-foreground/60">
                 Get rewarded when your referrals get hired
               </p>
             </div>
@@ -68,26 +78,26 @@ const Index = () => {
       </div>
 
       {/* Job Listings Section */}
-      <div className="container mx-auto px-4 py-16">
-        <h2 className="text-3xl font-bold text-center mb-8">Latest Opportunities</h2>
+      <div className="container mx-auto px-4 py-32">
+        <h2 className="text-4xl font-bold text-center mb-16">Latest Opportunities</h2>
         <JobList />
       </div>
 
       {/* Stats Section */}
-      <div className="bg-white py-16">
+      <div className="bg-secondary py-32">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
             <div>
-              <div className="text-4xl font-bold text-blue-600 mb-2">5000+</div>
-              <div className="text-gray-600">Active Jobs</div>
+              <div className="text-4xl font-bold text-[#10b981] mb-2">5000+</div>
+              <div className="text-foreground/60">Active Jobs</div>
             </div>
             <div>
-              <div className="text-4xl font-bold text-blue-600 mb-2">10k+</div>
-              <div className="text-gray-600">Successful Referrals</div>
+              <div className="text-4xl font-bold text-[#10b981] mb-2">10k+</div>
+              <div className="text-foreground/60">Successful Referrals</div>
             </div>
             <div>
-              <div className="text-4xl font-bold text-blue-600 mb-2">$2M+</div>
-              <div className="text-gray-600">Rewards Paid</div>
+              <div className="text-4xl font-bold text-[#10b981] mb-2">$2M+</div>
+              <div className="text-foreground/60">Rewards Paid</div>
             </div>
           </div>
         </div>
