@@ -1,74 +1,105 @@
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Share2, Users, DollarSign } from "lucide-react";
-
-// Mock data for shared jobs
-const MOCK_SHARED_JOBS = [
-  {
-    id: "1",
-    jobTitle: "Senior Software Engineer",
-    company: "TechCorp",
-    linkClicks: 45,
-    applicants: 8,
-    referralBonus: 5000,
-  },
-  {
-    id: "2",
-    jobTitle: "Product Manager",
-    company: "InnovateCo",
-    linkClicks: 32,
-    applicants: 5,
-    referralBonus: 4000,
-  },
-];
-
-// Mock data for referrals
-const MOCK_REFERRALS = [
-  {
-    id: "1",
-    name: "John Smith",
-    jobTitle: "Senior Software Engineer",
-    company: "TechCorp",
-    status: "interviewing",
-    resumeUrl: "/resumes/john-smith.pdf",
-    appliedDate: "2024-02-20",
-  },
-  {
-    id: "2",
-    name: "Sarah Johnson",
-    jobTitle: "Product Manager",
-    company: "InnovateCo",
-    status: "hired",
-    resumeUrl: "/resumes/sarah-johnson.pdf",
-    appliedDate: "2024-02-18",
-  },
-  {
-    id: "3",
-    name: "Michael Brown",
-    jobTitle: "Senior Software Engineer",
-    company: "TechCorp",
-    status: "applied",
-    resumeUrl: "/resumes/michael-brown.pdf",
-    appliedDate: "2024-02-22",
-  },
-];
-
-const getStatusColor = (status: string) => {
-  switch (status.toLowerCase()) {
-    case "hired":
-      return "bg-[#10b981]/10 text-[#10b981] hover:bg-[#10b981]/20";
-    case "interviewing":
-      return "bg-yellow-100 text-yellow-800 hover:bg-yellow-200";
-    case "rejected":
-      return "bg-red-100 text-red-800 hover:bg-red-200";
-    default:
-      return "bg-blue-100 text-blue-800 hover:bg-blue-200";
-  }
-};
+import { supabase } from "@/integrations/supabase/client";
+import { useSession } from "@supabase/auth-helpers-react";
+import { useQuery } from "@tanstack/react-query";
 
 export function ReferrerDashboard() {
+  const session = useSession();
+  const [totalEarnings, setTotalEarnings] = useState(0);
+  const [pendingEarnings, setPendingEarnings] = useState(0);
+  const [successfulReferrals, setSuccessfulReferrals] = useState(0);
+
+  const { data: sharedJobs } = useQuery({
+    queryKey: ["shared-jobs", session?.user?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("referrals")
+        .select(`
+          *,
+          job:jobs(*)
+        `)
+        .eq("referrer_id", session?.user?.id);
+
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!session?.user?.id,
+  });
+
+  const { data: referrals } = useQuery({
+    queryKey: ["referrals", session?.user?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("applications")
+        .select(`
+          *,
+          referral:referrals(*),
+          job:jobs(*)
+        `)
+        .eq("referrals.referrer_id", session?.user?.id);
+
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!session?.user?.id,
+  });
+
+  useEffect(() => {
+    if (!session?.user?.id) return;
+
+    const channel = supabase
+      .channel("referrals-tracking")
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "referrals",
+          filter: `referrer_id=eq.${session.user.id}`,
+        },
+        (payload) => {
+          console.log("Referral update:", payload);
+          // Refresh queries when data changes
+          queryClient.invalidateQueries({ queryKey: ["shared-jobs"] });
+          queryClient.invalidateQueries({ queryKey: ["referrals"] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [session?.user?.id]);
+
+  useEffect(() => {
+    if (referrals) {
+      const hired = referrals.filter((r) => r.status === "hired");
+      const pending = referrals.filter((r) => r.status === "interviewing");
+      
+      setSuccessfulReferrals(hired.length);
+      setTotalEarnings(hired.reduce((acc, r) => acc + (r.job?.referral_bonus || 0), 0));
+      setPendingEarnings(pending.reduce((acc, r) => acc + (r.job?.referral_bonus || 0), 0));
+    }
+  }, [referrals]);
+
+  const getStatusColor = (status: string) => {
+    switch (status.toLowerCase()) {
+      case "hired":
+        return "bg-[#10b981]/10 text-[#10b981] hover:bg-[#10b981]/20";
+      case "interviewing":
+        return "bg-yellow-100 text-yellow-800 hover:bg-yellow-200";
+      case "rejected":
+        return "bg-red-100 text-red-800 hover:bg-red-200";
+      default:
+        return "bg-blue-100 text-blue-800 hover:bg-blue-200";
+    }
+  };
+
   return (
     <div className="space-y-6">
       <Tabs defaultValue="shared-jobs" className="w-full">
@@ -93,26 +124,26 @@ export function ReferrerDashboard() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {MOCK_SHARED_JOBS.map((job) => (
-                    <TableRow key={job.id}>
-                      <TableCell>{job.jobTitle}</TableCell>
-                      <TableCell>{job.company}</TableCell>
+                  {sharedJobs?.map((referral) => (
+                    <TableRow key={referral.id}>
+                      <TableCell>{referral.job?.title}</TableCell>
+                      <TableCell>{referral.job?.company}</TableCell>
                       <TableCell>
                         <div className="flex items-center gap-1">
                           <Share2 className="h-4 w-4 text-gray-500" />
-                          {job.linkClicks}
+                          {referral.clicks}
                         </div>
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-1">
                           <Users className="h-4 w-4 text-gray-500" />
-                          {job.applicants}
+                          {referrals?.filter((r) => r.referral_id === referral.id).length || 0}
                         </div>
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-1">
                           <DollarSign className="h-4 w-4 text-[#10b981]" />
-                          {job.referralBonus}
+                          {referral.job?.referral_bonus}
                         </div>
                       </TableCell>
                     </TableRow>
@@ -138,15 +169,15 @@ export function ReferrerDashboard() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {MOCK_REFERRALS.map((referral) => (
-                    <TableRow key={referral.id}>
-                      <TableCell>{referral.name}</TableCell>
-                      <TableCell>{referral.jobTitle}</TableCell>
-                      <TableCell>{referral.company}</TableCell>
-                      <TableCell>{new Date(referral.appliedDate).toLocaleDateString()}</TableCell>
+                  {referrals?.map((application) => (
+                    <TableRow key={application.id}>
+                      <TableCell>{application.applicant_name}</TableCell>
+                      <TableCell>{application.job?.title}</TableCell>
+                      <TableCell>{application.job?.company}</TableCell>
+                      <TableCell>{new Date(application.created_at).toLocaleDateString()}</TableCell>
                       <TableCell>
-                        <Badge className={getStatusColor(referral.status)}>
-                          {referral.status}
+                        <Badge className={getStatusColor(application.status)}>
+                          {application.status}
                         </Badge>
                       </TableCell>
                     </TableRow>
@@ -167,8 +198,8 @@ export function ReferrerDashboard() {
                   <DollarSign className="h-4 w-4 text-[#10b981]" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">$9,000</div>
-                  <p className="text-xs text-muted-foreground">+20.1% from last month</p>
+                  <div className="text-2xl font-bold">${totalEarnings}</div>
+                  <p className="text-xs text-muted-foreground">From {successfulReferrals} successful referrals</p>
                 </CardContent>
               </Card>
               <Card>
@@ -177,8 +208,8 @@ export function ReferrerDashboard() {
                   <DollarSign className="h-4 w-4 text-yellow-500" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">$3,500</div>
-                  <p className="text-xs text-muted-foreground">From 3 pending referrals</p>
+                  <div className="text-2xl font-bold">${pendingEarnings}</div>
+                  <p className="text-xs text-muted-foreground">From interviewing candidates</p>
                 </CardContent>
               </Card>
               <Card>
@@ -187,7 +218,7 @@ export function ReferrerDashboard() {
                   <Users className="h-4 w-4 text-[#10b981]" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">12</div>
+                  <div className="text-2xl font-bold">{successfulReferrals}</div>
                   <p className="text-xs text-muted-foreground">Total hired candidates</p>
                 </CardContent>
               </Card>

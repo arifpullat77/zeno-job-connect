@@ -15,8 +15,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { useNavigate } from "react-router-dom";
 import { useSession } from "@supabase/auth-helpers-react";
+import { useNavigate } from "react-router-dom";
 
 const formSchema = z.object({
   title: z.string().min(2).max(100),
@@ -29,8 +29,8 @@ const formSchema = z.object({
 
 export function PostJobForm() {
   const { toast } = useToast();
-  const navigate = useNavigate();
   const session = useSession();
+  const navigate = useNavigate();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -45,7 +45,7 @@ export function PostJobForm() {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    if (!session?.user) {
+    if (!session?.user?.id) {
       toast({
         title: "Authentication required",
         description: "Please login to post a job.",
@@ -63,11 +63,10 @@ export function PostJobForm() {
       if (error) throw error;
 
       toast({
-        title: "Job Posted!",
-        description: "Your job listing has been created successfully.",
+        title: "Job posted successfully",
+        description: "Your job listing has been created.",
       });
-      
-      form.reset();
+
       navigate("/dashboard");
     } catch (error) {
       console.error("Error posting job:", error);
