@@ -10,13 +10,15 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
 export default function JobDetails() {
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
   const [searchParams] = useSearchParams();
   const referralCode = searchParams.get("ref");
 
   const { data: job, isLoading: isLoadingJob } = useQuery({
     queryKey: ["job", id],
     queryFn: async () => {
+      if (!id) throw new Error("Job ID is required");
+      
       const { data, error } = await supabase
         .from("jobs")
         .select("*")
@@ -26,6 +28,7 @@ export default function JobDetails() {
       if (error) throw error;
       return data as Job;
     },
+    enabled: !!id,
   });
 
   const { data: referral } = useQuery({
