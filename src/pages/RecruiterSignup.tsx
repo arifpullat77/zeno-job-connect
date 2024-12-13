@@ -12,12 +12,12 @@ export default function RecruiterSignup() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event: AuthChangeEvent, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event: AuthChangeEvent, session) => {
       if (event === "SIGNED_IN" || event === "SIGNED_UP") {
         const email = session?.user?.email;
         if (email && email.endsWith('@gmail.com')) {
           // Delete the user if they used a Gmail address
-          await supabase.auth.signOut();
+          supabase.auth.signOut();
           toast.error("Please use a corporate email address. Gmail addresses are not allowed.");
           return;
         }
