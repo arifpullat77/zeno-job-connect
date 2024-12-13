@@ -19,6 +19,8 @@ const MOCK_APPLICANTS = [
     jobTitle: "Senior Software Engineer",
     status: "interviewing",
     referrerId: "ref123",
+    referredBy: "Alice Smith",
+    resumeUrl: "/resumes/john-doe-resume.pdf",
   },
   {
     id: "2",
@@ -27,6 +29,8 @@ const MOCK_APPLICANTS = [
     jobTitle: "Product Manager",
     status: "applied",
     referrerId: "ref456",
+    referredBy: "Bob Johnson",
+    resumeUrl: "/resumes/jane-smith-resume.pdf",
   },
 ];
 
@@ -54,6 +58,14 @@ export function ApplicantList() {
     });
   };
 
+  const handleDownloadResume = (resumeUrl: string, applicantName: string) => {
+    // In a real implementation, this would trigger a file download
+    toast({
+      title: "Download Started",
+      description: `Downloading resume for ${applicantName}`,
+    });
+  };
+
   return (
     <div className="rounded-md border">
       <Table>
@@ -62,6 +74,8 @@ export function ApplicantList() {
             <TableHead>name</TableHead>
             <TableHead>email</TableHead>
             <TableHead>job</TableHead>
+            <TableHead>referred by</TableHead>
+            <TableHead>resume</TableHead>
             <TableHead>status</TableHead>
             <TableHead>actions</TableHead>
           </TableRow>
@@ -72,6 +86,17 @@ export function ApplicantList() {
               <TableCell>{applicant.name}</TableCell>
               <TableCell>{applicant.email}</TableCell>
               <TableCell>{applicant.jobTitle}</TableCell>
+              <TableCell>{applicant.referredBy}</TableCell>
+              <TableCell>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleDownloadResume(applicant.resumeUrl, applicant.name)}
+                  className="lowercase"
+                >
+                  download pdf
+                </Button>
+              </TableCell>
               <TableCell>
                 <Badge className={getStatusColor(applicant.status)}>
                   {applicant.status}
