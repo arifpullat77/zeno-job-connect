@@ -13,7 +13,7 @@ export default function RecruiterSignup() {
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event: AuthChangeEvent, session) => {
-      if (event === "SIGNED_UP") {
+      if (event === AuthChangeEvent.SIGNED_UP) {
         const email = session?.user?.email;
         if (email && email.endsWith('@gmail.com')) {
           // Delete the user if they used a Gmail address
@@ -29,13 +29,6 @@ export default function RecruiterSignup() {
 
     return () => subscription.unsubscribe();
   }, [navigate]);
-
-  const validateEmail = (email: string) => {
-    if (email.endsWith('@gmail.com')) {
-      return "Please use a corporate email address. Gmail addresses are not allowed.";
-    }
-    return null;
-  };
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-md">
