@@ -19,15 +19,10 @@ const Index = () => {
             <Link to="/login/recruiter" className="text-foreground/80 hover:text-foreground lowercase">for recruiters</Link>
             <Link to="/login/referrer" className="text-foreground/60 hover:text-foreground lowercase">refer & earn</Link>
           </div>
-          <div className="flex gap-4">
-            <Link to="/signup/recruiter">
+          <div>
+            <Link to="/login/recruiter">
               <Button className="bg-[#10b981] hover:bg-[#0d9668] text-black font-medium lowercase">
-                i'm a recruiter
-              </Button>
-            </Link>
-            <Link to="/signup/referrer">
-              <Button className="bg-[#10b981] hover:bg-[#0d9668] text-black font-medium lowercase">
-                i want to refer
+                login
               </Button>
             </Link>
           </div>
