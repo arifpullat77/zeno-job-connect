@@ -6,13 +6,14 @@ import { useEffect } from "react";
 import { Zap } from "lucide-react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
+import { AuthChangeEvent } from "@supabase/supabase-js";
 
 export default function RecruiterSignup() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === 'SIGNED_IN' || event === 'SIGNED_UP') {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event: AuthChangeEvent, session) => {
+      if (event === "SIGNED_IN" || event === "SIGNED_UP") {
         const email = session?.user?.email;
         if (email && email.endsWith('@gmail.com')) {
           // Delete the user if they used a Gmail address
