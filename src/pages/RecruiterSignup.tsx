@@ -1,76 +1,47 @@
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Auth } from "@supabase/auth-ui-react";
+import { ThemeSupa } from "@supabase/auth-ui-shared";
+import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import { Zap } from "lucide-react";
 import { Link } from "react-router-dom";
 
-const RecruiterSignup = () => {
+export default function RecruiterSignup() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (session) {
+        navigate("/dashboard");
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [navigate]);
+
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <Card className="w-full max-w-md p-8 bg-secondary border-0">
-        <div className="space-y-2 text-center mb-8">
-          <h1 className="text-2xl font-bold uppercase tracking-wider">find talent that fits – faster</h1>
-          <p className="text-muted-foreground">
-            post jobs, leverage networks, and reward referrals only when you hire.
-          </p>
-        </div>
-        <form className="space-y-6">
-          <div className="space-y-2">
-            <Label htmlFor="name" className="uppercase text-xs">full name</Label>
-            <Input id="name" type="text" placeholder="John Doe" />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="email" className="uppercase text-xs">corporate email</Label>
-            <Input 
-              id="email" 
-              type="email" 
-              placeholder="you@yourcompany.com"
-            />
-            <p className="text-xs text-muted-foreground">Only company domains allowed</p>
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="company" className="uppercase text-xs">company name</Label>
-            <Input id="company" type="text" placeholder="Acme Inc." />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="jobTitle" className="uppercase text-xs">job title</Label>
-            <Input 
-              id="jobTitle" 
-              type="text" 
-              placeholder="HR Manager, Recruiter"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="password" className="uppercase text-xs">password</Label>
-            <Input 
-              id="password" 
-              type="password" 
-              placeholder="Create a strong password"
-            />
-          </div>
-          <Button className="w-full bg-[#10b981] hover:bg-[#0d9668] text-black uppercase">
-            sign up as recruiter – start hiring now
-          </Button>
-        </form>
-        <p className="mt-6 text-xs text-center text-muted-foreground">
-          By signing up, you agree to our{" "}
-          <Link to="/terms" className="text-[#10b981] hover:underline">
-            Terms of Service
-          </Link>{" "}
-          and{" "}
-          <Link to="/privacy" className="text-[#10b981] hover:underline">
-            Privacy Policy
-          </Link>
-        </p>
-        <p className="mt-4 text-sm text-center text-muted-foreground">
-          Already have an account?{" "}
-          <Link to="/login/recruiter" className="text-[#10b981] hover:underline">
-            sign in
-          </Link>
-        </p>
-      </Card>
+    <div className="container mx-auto px-4 py-8 max-w-md">
+      <div className="flex items-center gap-2 mb-8">
+        <Link to="/" className="flex items-center gap-2">
+          <Zap className="h-8 w-8 text-[#10b981]" />
+          <span className="text-2xl font-bold lowercase">zeno</span>
+        </Link>
+      </div>
+      <div className="border rounded-lg p-8 shadow-sm">
+        <h1 className="text-2xl font-bold mb-8 lowercase">recruiter signup</h1>
+        <Auth
+          supabaseClient={supabase}
+          appearance={{ theme: ThemeSupa }}
+          providers={[]}
+          redirectTo={`${window.location.origin}/dashboard`}
+          onlyThirdPartyProviders={false}
+          view="sign_up"
+          additionalData={{
+            role: 'recruiter',
+            full_name: undefined
+          }}
+        />
+      </div>
     </div>
   );
-};
-
-export default RecruiterSignup;
+}

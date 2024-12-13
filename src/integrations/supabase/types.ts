@@ -9,7 +9,179 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      applications: {
+        Row: {
+          applicant_email: string
+          applicant_name: string
+          created_at: string | null
+          id: string
+          job_id: string | null
+          referral_id: string | null
+          resume_url: string | null
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          applicant_email: string
+          applicant_name: string
+          created_at?: string | null
+          id?: string
+          job_id?: string | null
+          referral_id?: string | null
+          resume_url?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          applicant_email?: string
+          applicant_name?: string
+          created_at?: string | null
+          id?: string
+          job_id?: string | null
+          referral_id?: string | null
+          resume_url?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "applications_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "applications_referral_id_fkey"
+            columns: ["referral_id"]
+            isOneToOne: false
+            referencedRelation: "referrals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      jobs: {
+        Row: {
+          company: string
+          created_at: string | null
+          description: string
+          id: string
+          location: string
+          recruiter_id: string | null
+          referral_bonus: number
+          salary: string
+          status: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          company: string
+          created_at?: string | null
+          description: string
+          id?: string
+          location: string
+          recruiter_id?: string | null
+          referral_bonus: number
+          salary: string
+          status?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          company?: string
+          created_at?: string | null
+          description?: string
+          id?: string
+          location?: string
+          recruiter_id?: string | null
+          referral_bonus?: number
+          salary?: string
+          status?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "jobs_recruiter_id_fkey"
+            columns: ["recruiter_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string | null
+          email: string | null
+          full_name: string | null
+          id: string
+          role: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          email?: string | null
+          full_name?: string | null
+          id: string
+          role?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          role?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      referrals: {
+        Row: {
+          clicks: number | null
+          created_at: string | null
+          id: string
+          job_id: string | null
+          referral_code: string
+          referrer_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          clicks?: number | null
+          created_at?: string | null
+          id?: string
+          job_id?: string | null
+          referral_code: string
+          referrer_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          clicks?: number | null
+          created_at?: string | null
+          id?: string
+          job_id?: string | null
+          referral_code?: string
+          referrer_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referrals_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "referrals_referrer_id_fkey"
+            columns: ["referrer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
