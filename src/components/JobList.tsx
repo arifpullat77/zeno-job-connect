@@ -1,38 +1,38 @@
+import { useQuery } from "@tanstack/react-query";
 import { Job } from "@/types";
 import { JobCard } from "./JobCard";
-
-// Temporary mock data until we have a backend
-const MOCK_JOBS: Job[] = [
-  {
-    id: "1",
-    title: "Senior Software Engineer",
-    company: "TechCorp",
-    location: "San Francisco, CA",
-    description: "We're looking for a senior software engineer with 5+ years of experience in React and Node.js...",
-    salary: "$150,000 - $200,000",
-    referral_bonus: 5000,
-    status: "open",
-    created_at: new Date().toISOString(),
-    recruiter_id: "1"
-  },
-  {
-    id: "2",
-    title: "Product Manager",
-    company: "InnovateCo",
-    location: "New York, NY",
-    description: "Seeking an experienced product manager to lead our flagship product...",
-    salary: "$130,000 - $180,000",
-    referral_bonus: 4000,
-    status: "open",
-    created_at: new Date().toISOString(),
-    recruiter_id: "1"
-  }
-];
+import { supabase } from "@/integrations/supabase/client";
+import { useSession } from "@supabase/auth-helpers-react";
 
 export function JobList() {
+  const session = useSession();
+
+  const { data: jobs, isLoading } = useQuery({
+    queryKey: ["jobs", session?.user?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("jobs")
+        .select("*")
+        .eq("recruiter_id", session?.user?.id)
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+      return data as Job[];
+    },
+    enabled: !!session?.user?.id,
+  });
+
+  if (isLoading) {
+    return <div>Loading jobs...</div>;
+  }
+
+  if (!jobs?.length) {
+    return <div className="text-muted-foreground">No jobs found. Post your first job to get started!</div>;
+  }
+
   return (
     <div className="space-y-4">
-      {MOCK_JOBS.map((job) => (
+      {jobs.map((job) => (
         <JobCard key={job.id} job={job} />
       ))}
     </div>

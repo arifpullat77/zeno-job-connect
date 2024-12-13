@@ -1,3 +1,6 @@
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { useSession } from "@supabase/auth-helpers-react";
 import {
   Table,
   TableBody,
@@ -10,61 +13,84 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 
-// Mock data until we have a backend
-const MOCK_APPLICANTS = [
-  {
-    id: "1",
-    name: "John Doe",
-    email: "john@example.com",
-    jobTitle: "Senior Software Engineer",
-    status: "interviewing",
-    referrerId: "ref123",
-    referredBy: "Alice Smith",
-    resumeUrl: "/resumes/john-doe-resume.pdf",
-  },
-  {
-    id: "2",
-    name: "Jane Smith",
-    email: "jane@example.com",
-    jobTitle: "Product Manager",
-    status: "applied",
-    referrerId: "ref456",
-    referredBy: "Bob Johnson",
-    resumeUrl: "/resumes/jane-smith-resume.pdf",
-  },
-];
-
 export function ApplicantList() {
   const { toast } = useToast();
+  const session = useSession();
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "hired":
-        return "bg-green-500/10 text-green-500";
-      case "interviewing":
-        return "bg-yellow-500/10 text-yellow-500";
-      case "rejected":
-        return "bg-red-500/10 text-red-500";
-      default:
-        return "bg-blue-500/10 text-blue-500";
+  const { data: applications, isLoading } = useQuery({
+    queryKey: ["applications", session?.user?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("applications")
+        .select(`
+          *,
+          job:jobs(*)
+        `)
+        .eq("jobs.recruiter_id", session?.user?.id)
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!session?.user?.id,
+  });
+
+  const handleStatusChange = async (applicantId: string, newStatus: string) => {
+    try {
+      const { error } = await supabase
+        .from("applications")
+        .update({ status: newStatus })
+        .eq("id", applicantId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Status Updated",
+        description: `Applicant status changed to ${newStatus}`,
+      });
+    } catch (error) {
+      console.error("Error updating status:", error);
+      toast({
+        title: "Error",
+        description: "Failed to update status. Please try again.",
+        variant: "destructive",
+      });
     }
   };
 
-  const handleStatusChange = (applicantId: string, newStatus: string) => {
-    // Mock status change until we have a backend
-    toast({
-      title: "Status Updated",
-      description: `Applicant status changed to ${newStatus}`,
-    });
+  const handleDownloadResume = (resumeUrl: string, applicantName: string) => {
+    if (!resumeUrl) {
+      toast({
+        title: "Resume Not Available",
+        description: "This applicant has not uploaded a resume.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    window.open(resumeUrl, "_blank");
   };
 
-  const handleDownloadResume = (resumeUrl: string, applicantName: string) => {
-    // In a real implementation, this would trigger a file download
-    toast({
-      title: "Download Started",
-      description: `Downloading resume for ${applicantName}`,
-    });
+  const getStatusColor = (status: string) => {
+    switch (status.toLowerCase()) {
+      case "hired":
+        return "bg-[#10b981]/10 text-[#10b981] hover:bg-[#10b981]/20";
+      case "interviewing":
+        return "bg-yellow-100 text-yellow-800 hover:bg-yellow-200";
+      case "rejected":
+        return "bg-red-100 text-red-800 hover:bg-red-200";
+      default:
+        return "bg-blue-100 text-blue-800 hover:bg-blue-200";
+    }
   };
+
+  if (isLoading) {
+    return <div>Loading applications...</div>;
+  }
+
+  if (!applications?.length) {
+    return <div className="text-muted-foreground">No applications found yet.</div>;
+  }
 
   return (
     <div className="rounded-md border">
@@ -74,32 +100,30 @@ export function ApplicantList() {
             <TableHead>name</TableHead>
             <TableHead>email</TableHead>
             <TableHead>job</TableHead>
-            <TableHead>referred by</TableHead>
             <TableHead>resume</TableHead>
             <TableHead>status</TableHead>
             <TableHead>actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {MOCK_APPLICANTS.map((applicant) => (
-            <TableRow key={applicant.id}>
-              <TableCell>{applicant.name}</TableCell>
-              <TableCell>{applicant.email}</TableCell>
-              <TableCell>{applicant.jobTitle}</TableCell>
-              <TableCell>{applicant.referredBy}</TableCell>
+          {applications.map((application) => (
+            <TableRow key={application.id}>
+              <TableCell>{application.applicant_name}</TableCell>
+              <TableCell>{application.applicant_email}</TableCell>
+              <TableCell>{application.job?.title}</TableCell>
               <TableCell>
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => handleDownloadResume(applicant.resumeUrl, applicant.name)}
+                  onClick={() => handleDownloadResume(application.resume_url || "", application.applicant_name)}
                   className="lowercase"
                 >
                   download pdf
                 </Button>
               </TableCell>
               <TableCell>
-                <Badge className={getStatusColor(applicant.status)}>
-                  {applicant.status}
+                <Badge className={getStatusColor(application.status || "applied")}>
+                  {application.status || "applied"}
                 </Badge>
               </TableCell>
               <TableCell>
@@ -107,7 +131,7 @@ export function ApplicantList() {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => handleStatusChange(applicant.id, "interviewing")}
+                    onClick={() => handleStatusChange(application.id, "interviewing")}
                     className="lowercase"
                   >
                     interviewing
@@ -115,7 +139,7 @@ export function ApplicantList() {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => handleStatusChange(applicant.id, "hired")}
+                    onClick={() => handleStatusChange(application.id, "hired")}
                     className="lowercase"
                   >
                     hired
@@ -123,7 +147,7 @@ export function ApplicantList() {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => handleStatusChange(applicant.id, "rejected")}
+                    onClick={() => handleStatusChange(application.id, "rejected")}
                     className="lowercase text-destructive"
                   >
                     reject
