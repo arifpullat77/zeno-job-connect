@@ -92,7 +92,7 @@ export function JobCard({ job, showReferButton = true }: JobCardProps) {
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          <p className="text-sm text-foreground/60 line-clamp-2 md:line-clamp-3">{job.description}</p>
+          <p className="text-sm text-foreground/60">{job.description}</p>
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="flex flex-wrap gap-3 md:gap-4">
               <div className="flex items-center gap-1">
