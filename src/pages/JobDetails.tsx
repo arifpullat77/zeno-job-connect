@@ -79,6 +79,7 @@ export default function JobDetails() {
             <CardContent className="p-6 space-y-6">
               <div className="space-y-4">
                 <h3 className="text-2xl font-bold lowercase">turn sharing into earning</h3>
+                <p className="text-muted-foreground">Share this job with your network and earn rewards when your referrals get hired!</p>
                 <ul className="space-y-3 text-foreground/60">
                   <li className="flex items-center gap-2">
                     <Share2 className="h-4 w-4 text-[#10b981]" />
@@ -90,7 +91,7 @@ export default function JobDetails() {
                   </li>
                   <li className="flex items-center gap-2">
                     <DollarSign className="h-4 w-4 text-[#10b981]" />
-                    Earn rewards when your referral gets hired
+                    Earn ${job.referral_bonus} when your referral gets hired
                   </li>
                 </ul>
                 <Link to="/signup/referrer">
@@ -104,7 +105,7 @@ export default function JobDetails() {
         )}
 
         <div className="bg-card p-6 rounded-lg border">
-          <h2 className="text-xl font-semibold mb-6">Apply for this position</h2>
+          <h2 className="text-xl font-semibold mb-6 lowercase">apply for this position</h2>
           <ApplicationForm jobId={job.id} referralId={referral?.id} />
         </div>
       </div>
