@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { BriefcaseIcon, DollarSignIcon, UsersIcon } from "lucide-react";
 import { JobList } from "@/components/JobList";
+import { Link } from "react-router-dom";
 
 const Index = () => {
   return (
@@ -11,8 +12,8 @@ const Index = () => {
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold">Zeno</h1>
           <div className="flex gap-8">
-            <a href="#" className="text-foreground/80 hover:text-foreground">for creators</a>
-            <a href="#" className="text-foreground/60 hover:text-foreground">for brands</a>
+            <Link to="/login/recruiter" className="text-foreground/80 hover:text-foreground">for recruiters</Link>
+            <Link to="/login/referrer" className="text-foreground/60 hover:text-foreground">refer & earn</Link>
           </div>
           <Button className="bg-[#10b981] hover:bg-[#0d9668] text-black font-medium">
             get started
