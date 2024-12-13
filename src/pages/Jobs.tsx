@@ -6,9 +6,16 @@ import { Zap } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useState, useMemo } from "react";
+import { JobFilters } from "@/components/job/JobFilters";
 
 export default function Jobs() {
   const isMobile = useIsMobile();
+  const [filters, setFilters] = useState({
+    search: "",
+    location: "",
+    minSalary: "",
+  });
   
   const { data: jobs, isLoading } = useQuery({
     queryKey: ["available-jobs"],
@@ -23,6 +30,32 @@ export default function Jobs() {
       return data as Job[];
     },
   });
+
+  const filteredJobs = useMemo(() => {
+    if (!jobs) return [];
+    
+    return jobs.filter((job) => {
+      const matchesSearch = !filters.search || 
+        job.title.toLowerCase().includes(filters.search.toLowerCase()) ||
+        job.company.toLowerCase().includes(filters.search.toLowerCase());
+        
+      const matchesLocation = !filters.location ||
+        job.location.toLowerCase().includes(filters.location.toLowerCase());
+        
+      const matchesSalary = !filters.minSalary ||
+        (parseInt(job.salary.replace(/[^0-9]/g, "")) >= parseInt(filters.minSalary));
+        
+      return matchesSearch && matchesLocation && matchesSalary;
+    });
+  }, [jobs, filters]);
+
+  const resetFilters = () => {
+    setFilters({
+      search: "",
+      location: "",
+      minSalary: "",
+    });
+  };
 
   return (
     <div className="container mx-auto px-4 py-4 md:py-8 min-h-screen">
@@ -40,21 +73,33 @@ export default function Jobs() {
         </Link>
       </div>
 
-      {isLoading ? (
-        <div className="flex items-center justify-center h-32 text-muted-foreground">
-          Loading jobs...
+      <div className="grid md:grid-cols-[300px,1fr] gap-6">
+        <div>
+          <JobFilters 
+            filters={filters}
+            setFilters={setFilters}
+            onReset={resetFilters}
+          />
         </div>
-      ) : !jobs?.length ? (
-        <div className="text-muted-foreground text-center p-4">
-          No jobs available at the moment.
+
+        <div>
+          {isLoading ? (
+            <div className="flex items-center justify-center h-32 text-muted-foreground">
+              Loading jobs...
+            </div>
+          ) : !filteredJobs.length ? (
+            <div className="text-muted-foreground text-center p-4">
+              {jobs?.length ? "No jobs match your filters." : "No jobs available at the moment."}
+            </div>
+          ) : (
+            <div className="space-y-3 md:space-y-4">
+              {filteredJobs.map((job) => (
+                <JobCard key={job.id} job={job} />
+              ))}
+            </div>
+          )}
         </div>
-      ) : (
-        <div className="space-y-3 md:space-y-4">
-          {jobs.map((job) => (
-            <JobCard key={job.id} job={job} />
-          ))}
-        </div>
-      )}
+      </div>
     </div>
   );
 }
