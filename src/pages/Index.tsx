@@ -10,30 +10,46 @@ const Index = () => {
       {/* Navigation */}
       <nav className="container mx-auto px-4 py-6">
         <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-bold">Zeno</h1>
+          <h1 className="text-2xl font-bold uppercase">Zeno</h1>
           <div className="flex gap-8">
-            <Link to="/login/recruiter" className="text-foreground/80 hover:text-foreground">for recruiters</Link>
-            <Link to="/login/referrer" className="text-foreground/60 hover:text-foreground">refer & earn</Link>
+            <Link to="/login/recruiter" className="text-foreground/80 hover:text-foreground uppercase">for recruiters</Link>
+            <Link to="/login/referrer" className="text-foreground/60 hover:text-foreground uppercase">refer & earn</Link>
           </div>
-          <Button className="bg-[#10b981] hover:bg-[#0d9668] text-black font-medium">
-            Get Started – It's Free!
-          </Button>
+          <div className="flex gap-4">
+            <Link to="/signup/recruiter">
+              <Button className="bg-[#10b981] hover:bg-[#0d9668] text-black font-medium">
+                I'm a Recruiter
+              </Button>
+            </Link>
+            <Link to="/signup/referrer">
+              <Button className="bg-[#10b981] hover:bg-[#0d9668] text-black font-medium">
+                I Want to Refer
+              </Button>
+            </Link>
+          </div>
         </div>
       </nav>
 
       {/* Hero Section */}
       <div className="container mx-auto px-4 py-24">
         <div className="text-center max-w-4xl mx-auto space-y-6">
-          <h1 className="text-5xl md:text-6xl font-bold leading-tight">
+          <h1 className="text-5xl md:text-6xl font-bold leading-tight uppercase">
             Turn Connections Into Careers – And Rewards
           </h1>
           <p className="text-xl text-foreground/60">
             Empower your network, share opportunities, and earn big when referrals succeed.
           </p>
-          <div className="pt-8">
-            <Button size="lg" className="bg-[#10b981] hover:bg-[#0d9668] text-black font-medium px-8 py-6 text-lg">
-              Get Started – It's Free!
-            </Button>
+          <div className="pt-8 flex gap-4 justify-center">
+            <Link to="/signup/recruiter">
+              <Button size="lg" className="bg-[#10b981] hover:bg-[#0d9668] text-black font-medium px-8 py-6 text-lg">
+                I'm a Recruiter
+              </Button>
+            </Link>
+            <Link to="/signup/referrer">
+              <Button size="lg" className="bg-[#10b981] hover:bg-[#0d9668] text-black font-medium px-8 py-6 text-lg">
+                I Want to Refer
+              </Button>
+            </Link>
           </div>
         </div>
       </div>
@@ -58,15 +74,17 @@ const Index = () => {
               <div className="h-12 w-12 bg-[#10b981]/10 rounded-full flex items-center justify-center">
                 <Building2 className="h-6 w-6 text-[#10b981]" />
               </div>
-              <h3 className="text-2xl font-bold">Find the Perfect Fit Faster</h3>
+              <h3 className="text-2xl font-bold uppercase">Find the Perfect Fit Faster</h3>
               <ul className="space-y-3 text-foreground/60">
                 <li>Post jobs with ease</li>
                 <li>Leverage networks of trusted professionals</li>
                 <li>Pay only when you hire – no upfront fees!</li>
               </ul>
-              <Button className="w-full bg-[#10b981] hover:bg-[#0d9668] text-black">
-                Post Your First Job
-              </Button>
+              <Link to="/signup/recruiter">
+                <Button className="w-full bg-[#10b981] hover:bg-[#0d9668] text-black">
+                  Post Your First Job
+                </Button>
+              </Link>
             </div>
           </Card>
 
@@ -76,15 +94,17 @@ const Index = () => {
               <div className="h-12 w-12 bg-[#10b981]/10 rounded-full flex items-center justify-center">
                 <Share2 className="h-6 w-6 text-[#10b981]" />
               </div>
-              <h3 className="text-2xl font-bold">Turn Sharing Into Earning</h3>
+              <h3 className="text-2xl font-bold uppercase">Turn Sharing Into Earning</h3>
               <ul className="space-y-3 text-foreground/60">
                 <li>Share job openings with your network</li>
                 <li>Track who applies through your personalized links</li>
                 <li>Earn rewards when your referral gets hired</li>
               </ul>
-              <Button className="w-full bg-[#10b981] hover:bg-[#0d9668] text-black">
-                Start Earning Today!
-              </Button>
+              <Link to="/signup/referrer">
+                <Button className="w-full bg-[#10b981] hover:bg-[#0d9668] text-black">
+                  Start Earning Today!
+                </Button>
+              </Link>
             </div>
           </Card>
 
@@ -185,7 +205,7 @@ const Index = () => {
 
       {/* Latest Jobs Section */}
       <div className="container mx-auto px-4 py-24">
-        <h2 className="text-3xl font-bold text-center mb-16">Latest Opportunities</h2>
+        <h2 className="text-3xl font-bold text-center mb-16 uppercase">Latest Opportunities</h2>
         <JobList />
       </div>
     </div>

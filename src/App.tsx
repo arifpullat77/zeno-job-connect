@@ -6,6 +6,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import RecruiterLogin from "./pages/RecruiterLogin";
 import ReferrerLogin from "./pages/ReferrerLogin";
+import RecruiterSignup from "./pages/RecruiterSignup";
+import ReferrerSignup from "./pages/ReferrerSignup";
 
 const queryClient = new QueryClient();
 
@@ -19,6 +21,8 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/login/recruiter" element={<RecruiterLogin />} />
           <Route path="/login/referrer" element={<ReferrerLogin />} />
+          <Route path="/signup/recruiter" element={<RecruiterSignup />} />
+          <Route path="/signup/referrer" element={<ReferrerSignup />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
