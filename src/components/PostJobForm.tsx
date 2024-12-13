@@ -57,25 +57,18 @@ export function PostJobForm() {
     }
 
     try {
-      // Ensure all required fields are present and correctly typed
-      const jobData: {
-        title: string;
-        company: string;
-        location: string;
-        description: string;
-        salary: string;
-        referral_bonus: number;
-        recruiter_id: string;
-        status: string;
-      } = {
-        ...values,
-        recruiter_id: session.user.id,
-        status: 'open',
-      };
-
       const { error } = await supabase
         .from("jobs")
-        .insert(jobData);
+        .insert({
+          title: values.title,
+          company: values.company,
+          location: values.location,
+          description: values.description,
+          salary: values.salary,
+          referral_bonus: values.referral_bonus,
+          recruiter_id: session.user.id,
+          status: 'open',
+        });
 
       if (error) throw error;
 
