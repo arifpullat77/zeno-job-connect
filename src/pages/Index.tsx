@@ -15,10 +15,6 @@ const Index = () => {
       <nav className="container mx-auto px-4 py-6">
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold lowercase">zeno</h1>
-          <div className="flex gap-8">
-            <Link to="/login/recruiter" className="text-foreground/80 hover:text-foreground lowercase">for recruiters</Link>
-            <Link to="/login/referrer" className="text-foreground/60 hover:text-foreground lowercase">refer & earn</Link>
-          </div>
           <div>
             <Link to="/login/recruiter">
               <Button className="bg-[#10b981] hover:bg-[#0d9668] text-black font-medium lowercase">
