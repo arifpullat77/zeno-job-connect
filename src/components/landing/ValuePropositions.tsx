@@ -56,9 +56,11 @@ export const ValuePropositions = () => {
               <li>Stand out in a competitive hiring market</li>
               <li>Join teams where your skills truly shine</li>
             </ul>
-            <Button className="w-full bg-primary hover:bg-primary/90 text-white lowercase">
-              find jobs now!
-            </Button>
+            <Link to="/jobs">
+              <Button className="w-full bg-primary hover:bg-primary/90 text-white lowercase">
+                find jobs now!
+              </Button>
+            </Link>
           </div>
         </Card>
       </div>
