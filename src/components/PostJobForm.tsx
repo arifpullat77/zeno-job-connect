@@ -12,17 +12,18 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useSession } from "@supabase/auth-helpers-react";
 import { useNavigate } from "react-router-dom";
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 
 const formSchema = z.object({
   title: z.string().min(2).max(100),
   company: z.string().min(2).max(100),
   location: z.string().min(2).max(100),
-  description: z.string().min(10).max(1000),
+  description: z.string().min(10),
   salary: z.string().min(2).max(100),
   referral_bonus: z.coerce.number().min(100),
 });
@@ -137,8 +138,23 @@ export function PostJobForm() {
             <FormItem>
               <FormLabel>Job Description</FormLabel>
               <FormControl>
-                <Textarea placeholder="Enter job description..." {...field} />
+                <ReactQuill 
+                  theme="snow"
+                  value={field.value}
+                  onChange={field.onChange}
+                  modules={{
+                    toolbar: [
+                      ['bold', 'italic', 'underline', 'strike'],
+                      ['link', 'blockquote'],
+                      [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                    ]
+                  }}
+                  className="bg-background"
+                />
               </FormControl>
+              <FormDescription>
+                You can format text and add links using the toolbar above
+              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
