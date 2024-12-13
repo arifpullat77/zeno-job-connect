@@ -14,6 +14,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
+import { useSession } from "@supabase/auth-helpers-react";
 
 const formSchema = z.object({
   title: z.string().min(2).max(100),
@@ -26,6 +29,9 @@ const formSchema = z.object({
 
 export function PostJobForm() {
   const { toast } = useToast();
+  const navigate = useNavigate();
+  const session = useSession();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -38,13 +44,39 @@ export function PostJobForm() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-    toast({
-      title: "Job Posted!",
-      description: "Your job listing has been created successfully.",
-    });
-    form.reset();
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    if (!session?.user) {
+      toast({
+        title: "Authentication required",
+        description: "Please login to post a job.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const { error } = await supabase.from("jobs").insert({
+        ...values,
+        recruiter_id: session.user.id,
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Job Posted!",
+        description: "Your job listing has been created successfully.",
+      });
+      
+      form.reset();
+      navigate("/dashboard");
+    } catch (error) {
+      console.error("Error posting job:", error);
+      toast({
+        title: "Error",
+        description: "Failed to post job. Please try again.",
+        variant: "destructive",
+      });
+    }
   }
 
   return (

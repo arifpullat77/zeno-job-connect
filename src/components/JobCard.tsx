@@ -3,6 +3,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/
 import { Button } from "./ui/button";
 import { MapPin, DollarSign, Share2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { useSession } from "@supabase/auth-helpers-react";
 
 interface JobCardProps {
   job: Job;
@@ -11,14 +13,61 @@ interface JobCardProps {
 
 export function JobCard({ job, showReferButton = true }: JobCardProps) {
   const { toast } = useToast();
+  const session = useSession();
 
   const handleShare = async () => {
-    const referralLink = `${window.location.origin}/jobs/${job.id}?ref=${crypto.randomUUID()}`;
-    await navigator.clipboard.writeText(referralLink);
-    toast({
-      title: "Link copied!",
-      description: "Share this link with potential candidates",
-    });
+    if (!session?.user) {
+      toast({
+        title: "Authentication required",
+        description: "Please login as a referrer to share jobs.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      // Check if a referral already exists
+      const { data: existingReferral } = await supabase
+        .from("referrals")
+        .select("referral_code")
+        .eq("job_id", job.id)
+        .eq("referrer_id", session.user.id)
+        .single();
+
+      if (existingReferral) {
+        const referralLink = `${window.location.origin}/jobs/${job.id}?ref=${existingReferral.referral_code}`;
+        await navigator.clipboard.writeText(referralLink);
+        toast({
+          title: "Link copied!",
+          description: "Share this link with potential candidates",
+        });
+        return;
+      }
+
+      // Create new referral
+      const referralCode = crypto.randomUUID();
+      const { error } = await supabase.from("referrals").insert({
+        job_id: job.id,
+        referrer_id: session.user.id,
+        referral_code: referralCode,
+      });
+
+      if (error) throw error;
+
+      const referralLink = `${window.location.origin}/jobs/${job.id}?ref=${referralCode}`;
+      await navigator.clipboard.writeText(referralLink);
+      toast({
+        title: "Link created and copied!",
+        description: "Share this link with potential candidates",
+      });
+    } catch (error) {
+      console.error("Error creating referral:", error);
+      toast({
+        title: "Error",
+        description: "Failed to create referral link. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
