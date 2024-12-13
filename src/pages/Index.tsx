@@ -15,7 +15,7 @@ export default function Index() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-background text-foreground flex flex-col">
       <header className="container mx-auto px-4 py-4 md:py-6">
         <nav className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -104,7 +104,8 @@ export default function Index() {
           )}
         </nav>
       </header>
-      <main>
+      
+      <main className="flex-grow">
         <HeroSection />
         <SubHeader />
         <ValuePropositions />
@@ -112,6 +113,24 @@ export default function Index() {
         <SocialProof />
         <ClosingSection />
       </main>
+
+      <footer className="container mx-auto px-4 py-8 mt-16 border-t border-secondary/50">
+        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="flex items-center gap-2">
+            <Zap className="h-6 w-6 text-[#10b981]" />
+            <span className="text-xl font-bold gradient-text">zeno</span>
+          </div>
+          
+          <div className="flex items-center gap-4 text-sm text-muted-foreground">
+            <Link to="/terms" className="hover:text-foreground transition-colors lowercase">
+              terms of service
+            </Link>
+            <Link to="/privacy" className="hover:text-foreground transition-colors lowercase">
+              privacy policy
+            </Link>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
