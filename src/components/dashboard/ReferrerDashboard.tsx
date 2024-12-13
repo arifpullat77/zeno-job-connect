@@ -6,10 +6,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Share2, Users, DollarSign } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useSession } from "@supabase/auth-helpers-react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 export function ReferrerDashboard() {
   const session = useSession();
+  const queryClient = useQueryClient();
   const [totalEarnings, setTotalEarnings] = useState(0);
   const [pendingEarnings, setPendingEarnings] = useState(0);
   const [successfulReferrals, setSuccessfulReferrals] = useState(0);
@@ -62,8 +63,7 @@ export function ReferrerDashboard() {
           table: "referrals",
           filter: `referrer_id=eq.${session.user.id}`,
         },
-        (payload) => {
-          console.log("Referral update:", payload);
+        () => {
           // Refresh queries when data changes
           queryClient.invalidateQueries({ queryKey: ["shared-jobs"] });
           queryClient.invalidateQueries({ queryKey: ["referrals"] });
@@ -74,7 +74,7 @@ export function ReferrerDashboard() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [session?.user?.id]);
+  }, [session?.user?.id, queryClient]);
 
   useEffect(() => {
     if (referrals) {

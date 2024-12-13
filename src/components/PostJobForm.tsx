@@ -27,12 +27,14 @@ const formSchema = z.object({
   referral_bonus: z.coerce.number().min(100),
 });
 
+type FormValues = z.infer<typeof formSchema>;
+
 export function PostJobForm() {
   const { toast } = useToast();
   const session = useSession();
   const navigate = useNavigate();
 
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       title: "",
@@ -44,7 +46,7 @@ export function PostJobForm() {
     },
   });
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: FormValues) {
     if (!session?.user?.id) {
       toast({
         title: "Authentication required",
@@ -55,10 +57,15 @@ export function PostJobForm() {
     }
 
     try {
-      const { error } = await supabase.from("jobs").insert({
+      const jobData = {
         ...values,
         recruiter_id: session.user.id,
-      });
+        status: 'open',
+      };
+
+      const { error } = await supabase
+        .from("jobs")
+        .insert(jobData);
 
       if (error) throw error;
 
