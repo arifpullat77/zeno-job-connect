@@ -148,7 +148,6 @@ export type Database = {
           id: string
           is_admin: boolean | null
           role: string | null
-          stripe_customer_id: string | null
           updated_at: string | null
         }
         Insert: {
@@ -158,7 +157,6 @@ export type Database = {
           id: string
           is_admin?: boolean | null
           role?: string | null
-          stripe_customer_id?: string | null
           updated_at?: string | null
         }
         Update: {
@@ -168,7 +166,6 @@ export type Database = {
           id?: string
           is_admin?: boolean | null
           role?: string | null
-          stripe_customer_id?: string | null
           updated_at?: string | null
         }
         Relationships: []
@@ -223,8 +220,6 @@ export type Database = {
           created_at: string | null
           id: string
           status: string
-          stripe_customer_id: string | null
-          stripe_subscription_id: string | null
           trial_end: string | null
           trial_start: string | null
           updated_at: string | null
@@ -234,8 +229,6 @@ export type Database = {
           created_at?: string | null
           id?: string
           status?: string
-          stripe_customer_id?: string | null
-          stripe_subscription_id?: string | null
           trial_end?: string | null
           trial_start?: string | null
           updated_at?: string | null
@@ -245,8 +238,6 @@ export type Database = {
           created_at?: string | null
           id?: string
           status?: string
-          stripe_customer_id?: string | null
-          stripe_subscription_id?: string | null
           trial_end?: string | null
           trial_start?: string | null
           updated_at?: string | null

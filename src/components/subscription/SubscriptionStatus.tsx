@@ -22,25 +22,24 @@ export function SubscriptionStatus() {
 
   const checkSubscription = async () => {
     try {
-      const { data, error } = await supabase.functions.invoke('check-subscription');
+      const { data, error } = await supabase
+        .from('subscriptions')
+        .select('*')
+        .eq('user_id', session?.user?.id)
+        .single();
+
       if (error) throw error;
-      setSubscription(data);
+
+      setSubscription({
+        status: data.status,
+        trialEnd: data.trial_end,
+        isActive: ['trialing', 'active'].includes(data.status)
+      });
     } catch (error) {
       console.error('Error checking subscription:', error);
       toast.error('Failed to check subscription status');
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleSubscribe = async () => {
-    try {
-      const { data, error } = await supabase.functions.invoke('create-checkout');
-      if (error) throw error;
-      window.location.href = data.url;
-    } catch (error) {
-      console.error('Error creating checkout session:', error);
-      toast.error('Failed to start subscription process');
     }
   };
 
@@ -56,7 +55,9 @@ export function SubscriptionStatus() {
           <CardDescription>Get 2 months free access to all features</CardDescription>
         </CardHeader>
         <CardContent>
-          <Button onClick={handleSubscribe}>Start Trial</Button>
+          <Button onClick={() => toast.info('Razorpay integration coming soon')}>
+            Start Trial
+          </Button>
         </CardContent>
       </Card>
     );
@@ -78,7 +79,7 @@ export function SubscriptionStatus() {
       </CardHeader>
       <CardContent>
         {!subscription.isActive && (
-          <Button onClick={handleSubscribe}>
+          <Button onClick={() => toast.info('Razorpay integration coming soon')}>
             {subscription.status === 'trialing' ? 'Upgrade Now' : 'Subscribe'}
           </Button>
         )}
