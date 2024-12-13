@@ -13,7 +13,7 @@
     --popover: 275 43% 15%;
     --popover-foreground: 0 0% 100%;
 
-    --primary: 316 100% 75%;
+    --primary: 157 55% 61%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 275 43% 25%;
@@ -22,7 +22,7 @@
     --muted: 275 43% 25%;
     --muted-foreground: 0 0% 70%;
 
-    --accent: 316 100% 75%;
+    --accent: 157 55% 61%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84.2% 60.2%;
@@ -30,7 +30,7 @@
 
     --border: 275 43% 25%;
     --input: 275 43% 25%;
-    --ring: 316 100% 75%;
+    --ring: 157 55% 61%;
 
     --radius: 0.5rem;
   }
@@ -46,11 +46,11 @@
 }
 
 .gradient-text {
-  @apply bg-clip-text text-transparent bg-gradient-to-r from-[#FF69B4] to-[#FFB6C1];
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-[#66D19E] to-[#88E3B7];
 }
 
 .toggl-button {
-  @apply bg-[#FF69B4] hover:bg-[#FF69B4]/90 text-white font-medium px-8 py-3 rounded-full transition-all duration-300 hover:shadow-lg;
+  @apply bg-[#66D19E] hover:bg-[#66D19E]/90 text-white font-medium px-8 py-3 rounded-full transition-all duration-300 hover:shadow-lg;
 }
 
 .toggl-secondary-button {
