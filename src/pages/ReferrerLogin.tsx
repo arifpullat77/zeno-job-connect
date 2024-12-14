@@ -5,19 +5,38 @@ import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { Zap } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function ReferrerLogin() {
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (session) {
-        navigate("/dashboard");
+        // Fetch the user's profile to check their role
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', session.user.id)
+          .single();
+
+        if (profile?.role === 'referrer') {
+          navigate("/dashboard");
+        } else {
+          // Wrong role - sign out and show error
+          await supabase.auth.signOut();
+          toast({
+            variant: "destructive",
+            title: "Access Denied",
+            description: "This login is only for referrers. Please use the referrer account or sign up as a referrer.",
+          });
+        }
       }
     });
 
     return () => subscription.unsubscribe();
-  }, [navigate]);
+  }, [navigate, toast]);
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-md">
@@ -55,6 +74,9 @@ export default function ReferrerLogin() {
           onlyThirdPartyProviders={false}
           view="sign_in"
         />
+        <div className="mt-4 text-center text-sm text-muted-foreground">
+          Are you a recruiter? <Link to="/login/recruiter" className="text-primary hover:underline">Login here</Link>
+        </div>
       </div>
     </div>
   );
