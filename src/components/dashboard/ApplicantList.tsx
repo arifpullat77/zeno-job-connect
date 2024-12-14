@@ -20,6 +20,20 @@ export function ApplicantList() {
   const { data: applications, isLoading } = useQuery({
     queryKey: ["applications", session?.user?.id],
     queryFn: async () => {
+      // First get the recruiter's jobs
+      const { data: recruiterJobs, error: jobsError } = await supabase
+        .from("jobs")
+        .select("id")
+        .eq("recruiter_id", session?.user?.id);
+
+      if (jobsError) throw jobsError;
+
+      // If recruiter has no jobs, return empty array
+      if (!recruiterJobs?.length) return [];
+
+      // Get applications only for the recruiter's jobs
+      const jobIds = recruiterJobs.map(job => job.id);
+      
       const { data, error } = await supabase
         .from("applications")
         .select(`
@@ -33,7 +47,7 @@ export function ApplicantList() {
             )
           )
         `)
-        .eq("jobs.recruiter_id", session?.user?.id)
+        .in("job_id", jobIds)
         .order("created_at", { ascending: false });
 
       if (error) throw error;
