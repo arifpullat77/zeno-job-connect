@@ -13,11 +13,16 @@ export function SubscriptionCheck({ children }: SubscriptionCheckProps) {
   const { data: subscription, isLoading } = useQuery({
     queryKey: ["subscription", session?.user?.id],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('subscriptions')
         .select('*')
         .eq('user_id', session?.user?.id)
         .maybeSingle();
+      
+      if (error) {
+        console.error('Error fetching subscription:', error);
+        return null;
+      }
       
       return data;
     },
@@ -28,6 +33,7 @@ export function SubscriptionCheck({ children }: SubscriptionCheckProps) {
     return <div>Loading...</div>;
   }
 
+  // If no subscription exists or it's expired/trial ended, show subscription status
   const isSubscriptionInactive = !subscription || 
     subscription.status === 'expired' || 
     (subscription.status === 'trialing' && subscription.trial_end && new Date(subscription.trial_end) < new Date());
