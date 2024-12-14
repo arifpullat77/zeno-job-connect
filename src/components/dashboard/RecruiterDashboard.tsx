@@ -16,19 +16,13 @@ export function RecruiterDashboard() {
   const { data: subscription, isLoading } = useQuery({
     queryKey: ["subscription", session?.user?.id],
     queryFn: async () => {
-      try {
-        const { data, error } = await supabase
-          .from('subscriptions')
-          .select('*')
-          .eq('user_id', session?.user?.id)
-          .maybeSingle();
-
-        if (error) throw error;
-        return data;
-      } catch (error) {
-        console.error('Error fetching subscription:', error);
-        return null;
-      }
+      const { data } = await supabase
+        .from('subscriptions')
+        .select('*')
+        .eq('user_id', session?.user?.id)
+        .maybeSingle();
+      
+      return data;
     },
     enabled: !!session?.user?.id,
   });
