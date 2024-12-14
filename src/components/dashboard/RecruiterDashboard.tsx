@@ -20,7 +20,7 @@ export function RecruiterDashboard() {
         .from('subscriptions')
         .select('*')
         .eq('user_id', session?.user?.id)
-        .maybeSingle();  // Using maybeSingle() instead of single()
+        .maybeSingle();
 
       if (error) throw error;
       return data;
