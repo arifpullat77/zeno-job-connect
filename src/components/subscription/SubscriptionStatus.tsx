@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { loadScript } from "@/lib/utils";
+import { Lock } from "lucide-react";
+import { PricingCards } from "./PricingCards";
 
 interface SubscriptionStatus {
   status: string;
@@ -128,47 +129,52 @@ export function SubscriptionStatus() {
 
   if (!subscription) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Start Your Free Trial</CardTitle>
-          <CardDescription>Get 2 months free access to all features</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <Button onClick={startFreeTrial} className="w-full">
-            Start Free Trial
-          </Button>
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">Or Subscribe Now</span>
-            </div>
-          </div>
-          <Button 
-            onClick={() => handlePayment('monthly')} 
-            variant="outline" 
-            className="w-full"
-            disabled={processingPayment}
-          >
-            Subscribe Monthly (₹9.99)
-          </Button>
-          <Button 
-            onClick={() => handlePayment('yearly')} 
-            variant="outline" 
-            className="w-full"
-            disabled={processingPayment}
-          >
-            Subscribe Yearly (₹99.99)
-          </Button>
-        </CardContent>
-      </Card>
+      <div className="space-y-8">
+        <Card>
+          <CardHeader>
+            <CardTitle>Choose Your Plan</CardTitle>
+            <CardDescription>Select the plan that best fits your needs</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <PricingCards
+              onStartTrial={startFreeTrial}
+              onSubscribe={handlePayment}
+              isProcessingPayment={processingPayment}
+            />
+          </CardContent>
+        </Card>
+      </div>
     );
   }
 
   const daysLeft = subscription.trialEnd
     ? Math.ceil((new Date(subscription.trialEnd).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))
     : 0;
+
+  if (subscription.status === 'expired') {
+    return (
+      <div className="space-y-8">
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Lock className="h-5 w-5" />
+              Dashboard Locked
+            </CardTitle>
+            <CardDescription>
+              Your trial period has expired. Please subscribe to continue using the platform.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <PricingCards
+              onStartTrial={startFreeTrial}
+              onSubscribe={handlePayment}
+              isProcessingPayment={processingPayment}
+            />
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <Card>
@@ -180,60 +186,20 @@ export function SubscriptionStatus() {
             : `Status: ${subscription.status}`}
         </CardDescription>
       </CardHeader>
-      <CardContent>
-        {subscription.status === 'trialing' && (
-          <div className="space-y-4">
+      {subscription.status === 'trialing' && (
+        <CardContent>
+          <div className="space-y-8">
             <p className="text-sm text-muted-foreground">
               Enjoy your free trial! No payment information required.
             </p>
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t" />
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-background px-2 text-muted-foreground">Optional</span>
-              </div>
-            </div>
-            <Button 
-              onClick={() => handlePayment('monthly')} 
-              variant="outline" 
-              className="w-full"
-              disabled={processingPayment}
-            >
-              Subscribe Monthly (₹9.99)
-            </Button>
-            <Button 
-              onClick={() => handlePayment('yearly')} 
-              variant="outline" 
-              className="w-full"
-              disabled={processingPayment}
-            >
-              Subscribe Yearly (₹99.99)
-            </Button>
+            <PricingCards
+              onStartTrial={startFreeTrial}
+              onSubscribe={handlePayment}
+              isProcessingPayment={processingPayment}
+            />
           </div>
-        )}
-        {subscription.status === 'expired' && (
-          <div className="space-y-4">
-            <p className="text-sm text-red-500">
-              Your trial has expired. Please subscribe to continue using the platform.
-            </p>
-            <Button 
-              onClick={() => handlePayment('monthly')} 
-              className="w-full"
-              disabled={processingPayment}
-            >
-              Subscribe Monthly (₹9.99)
-            </Button>
-            <Button 
-              onClick={() => handlePayment('yearly')} 
-              className="w-full"
-              disabled={processingPayment}
-            >
-              Subscribe Yearly (₹99.99)
-            </Button>
-          </div>
-        )}
-      </CardContent>
+        </CardContent>
+      )}
     </Card>
   );
 }
