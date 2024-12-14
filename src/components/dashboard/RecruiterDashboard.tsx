@@ -13,7 +13,7 @@ export function RecruiterDashboard() {
   const session = useSession();
   const queryClient = useQueryClient();
 
-  const { data: subscription } = useQuery({
+  const { data: subscription, isLoading } = useQuery({
     queryKey: ["subscription", session?.user?.id],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -53,8 +53,13 @@ export function RecruiterDashboard() {
     };
   }, [session?.user?.id, queryClient]);
 
-  const isSubscriptionExpired = subscription?.status === 'expired' || 
-    (subscription?.status === 'trialing' && subscription?.trial_end && new Date(subscription.trial_end) < new Date());
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  const isSubscriptionExpired = !subscription || 
+    subscription.status === 'expired' || 
+    (subscription.status === 'trialing' && subscription.trial_end && new Date(subscription.trial_end) < new Date());
 
   if (isSubscriptionExpired) {
     return (
