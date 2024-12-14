@@ -8,9 +8,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { SubscriptionStatus } from "@/components/subscription/SubscriptionStatus";
 import { useQuery } from "@tanstack/react-query";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Lock } from "lucide-react";
 
 export function RecruiterDashboard() {
   const session = useSession();
@@ -62,20 +59,7 @@ export function RecruiterDashboard() {
   if (isSubscriptionExpired) {
     return (
       <div className="space-y-8">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Lock className="h-5 w-5" />
-              Dashboard Locked
-            </CardTitle>
-            <CardDescription>
-              Your trial period has expired. Please subscribe to continue using the platform.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <SubscriptionStatus />
-          </CardContent>
-        </Card>
+        <SubscriptionStatus />
       </div>
     );
   }

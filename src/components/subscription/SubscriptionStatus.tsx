@@ -5,10 +5,12 @@ import { toast } from "sonner";
 import { loadScript } from "@/lib/utils";
 import { Lock } from "lucide-react";
 import { PricingCards } from "./PricingCards";
+import { SubscriptionDetails } from "./SubscriptionDetails";
 
 interface SubscriptionStatus {
   status: string;
   trialEnd: string | null;
+  planType?: 'monthly' | 'yearly';
   isActive: boolean;
 }
 
@@ -36,6 +38,7 @@ export function SubscriptionStatus() {
       setSubscription({
         status: data.status,
         trialEnd: data.trial_end,
+        planType: data.plan_type,
         isActive: ['trialing', 'active'].includes(data.status)
       });
     } catch (error) {
@@ -147,10 +150,6 @@ export function SubscriptionStatus() {
     );
   }
 
-  const daysLeft = subscription.trialEnd
-    ? Math.ceil((new Date(subscription.trialEnd).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))
-    : 0;
-
   if (subscription.status === 'expired') {
     return (
       <div className="space-y-8">
@@ -177,29 +176,10 @@ export function SubscriptionStatus() {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Subscription Status</CardTitle>
-        <CardDescription>
-          {subscription.status === 'trialing' 
-            ? `Trial period: ${daysLeft} days remaining`
-            : `Status: ${subscription.status}`}
-        </CardDescription>
-      </CardHeader>
-      {subscription.status === 'trialing' && (
-        <CardContent>
-          <div className="space-y-8">
-            <p className="text-sm text-muted-foreground">
-              Enjoy your free trial! No payment information required.
-            </p>
-            <PricingCards
-              onStartTrial={startFreeTrial}
-              onSubscribe={handlePayment}
-              isProcessingPayment={processingPayment}
-            />
-          </div>
-        </CardContent>
-      )}
-    </Card>
+    <SubscriptionDetails 
+      status={subscription.status}
+      trialEnd={subscription.trialEnd}
+      planType={subscription.planType}
+    />
   );
 }
