@@ -64,7 +64,6 @@ export function ReferrerDashboard() {
           filter: `referrer_id=eq.${session.user.id}`,
         },
         () => {
-          // Refresh queries when data changes
           queryClient.invalidateQueries({ queryKey: ["shared-jobs"] });
           queryClient.invalidateQueries({ queryKey: ["referrals"] });
         }

@@ -219,6 +219,7 @@ export type Database = {
         Row: {
           created_at: string | null
           id: string
+          plan_type: string | null
           status: string
           trial_end: string | null
           trial_start: string | null
@@ -228,6 +229,7 @@ export type Database = {
         Insert: {
           created_at?: string | null
           id?: string
+          plan_type?: string | null
           status?: string
           trial_end?: string | null
           trial_start?: string | null
@@ -237,6 +239,7 @@ export type Database = {
         Update: {
           created_at?: string | null
           id?: string
+          plan_type?: string | null
           status?: string
           trial_end?: string | null
           trial_start?: string | null
