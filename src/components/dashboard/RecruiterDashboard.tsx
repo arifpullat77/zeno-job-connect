@@ -20,7 +20,7 @@ export function RecruiterDashboard() {
         .from('subscriptions')
         .select('*')
         .eq('user_id', session?.user?.id)
-        .single();
+        .maybeSingle();  // Using maybeSingle() instead of single()
 
       if (error) throw error;
       return data;
@@ -54,7 +54,7 @@ export function RecruiterDashboard() {
   }, [session?.user?.id, queryClient]);
 
   const isSubscriptionExpired = subscription?.status === 'expired' || 
-    (subscription?.status === 'trialing' && new Date(subscription?.trial_end) < new Date());
+    (subscription?.status === 'trialing' && subscription?.trial_end && new Date(subscription.trial_end) < new Date());
 
   if (isSubscriptionExpired) {
     return (
