@@ -215,39 +215,6 @@ export type Database = {
           },
         ]
       }
-      subscriptions: {
-        Row: {
-          created_at: string | null
-          id: string
-          plan_type: string | null
-          status: string
-          trial_end: string | null
-          trial_start: string | null
-          updated_at: string | null
-          user_id: string
-        }
-        Insert: {
-          created_at?: string | null
-          id?: string
-          plan_type?: string | null
-          status?: string
-          trial_end?: string | null
-          trial_start?: string | null
-          updated_at?: string | null
-          user_id: string
-        }
-        Update: {
-          created_at?: string | null
-          id?: string
-          plan_type?: string | null
-          status?: string
-          trial_end?: string | null
-          trial_start?: string | null
-          updated_at?: string | null
-          user_id?: string
-        }
-        Relationships: []
-      }
     }
     Views: {
       [_ in never]: never
