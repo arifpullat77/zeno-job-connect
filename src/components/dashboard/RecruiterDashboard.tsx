@@ -6,9 +6,8 @@ export function RecruiterDashboard() {
   return (
     <div className="space-y-8">
       <RealtimeUpdates />
-      <SubscriptionCheck>
-        <DashboardTabs />
-      </SubscriptionCheck>
+      <DashboardTabs />
+      <SubscriptionCheck />
     </div>
   );
 }
