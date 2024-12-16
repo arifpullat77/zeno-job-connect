@@ -25,7 +25,7 @@ export const supabase = createClient<Database>(
 );
 
 // Handle auth state changes
-supabase.auth.onAuthStateChange((event, session) => {
+supabase.auth.onAuthStateChange((event: 'SIGNED_IN' | 'SIGNED_OUT' | 'TOKEN_REFRESHED' | 'TOKEN_REFRESH_FAILED', session) => {
   if (event === 'TOKEN_REFRESHED') {
     console.log('Token was refreshed successfully');
   }
