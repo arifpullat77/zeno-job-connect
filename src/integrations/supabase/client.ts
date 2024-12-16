@@ -24,7 +24,7 @@ export const supabase = createClient<Database>(
   }
 );
 
-// Add error handling for auth state changes
+// Handle auth state changes
 supabase.auth.onAuthStateChange((event, session) => {
   if (event === 'TOKEN_REFRESHED') {
     console.log('Token was refreshed successfully');
@@ -33,13 +33,11 @@ supabase.auth.onAuthStateChange((event, session) => {
   if (event === 'SIGNED_OUT') {
     localStorage.removeItem('zeno-auth-token');
   }
-});
 
-// Handle auth errors
-supabase.auth.onError((error) => {
-  console.error('Auth error:', error);
-  if (error.message.includes('refresh_token_not_found')) {
+  // Handle refresh token errors
+  if (event === 'TOKEN_REFRESH_FAILED') {
+    console.error('Token refresh failed');
     localStorage.removeItem('zeno-auth-token');
-    window.location.href = '/login/referrer'; // Redirect to login page
+    window.location.href = '/login/referrer';
   }
 });
