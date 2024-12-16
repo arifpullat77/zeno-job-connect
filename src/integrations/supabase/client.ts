@@ -18,7 +18,7 @@ export const supabase = createClient<Database>(
     },
     global: {
       headers: {
-        'x-session-length': '864000', // 10 days in seconds
+        'x-session-length': '864000',
       },
     },
   }
@@ -35,7 +35,7 @@ supabase.auth.onAuthStateChange((event, session) => {
   }
 
   // Handle refresh token errors
-  if (event === 'TOKEN_REFRESH_FAILED') {
+  if (event === 'TOKEN_REFRESH_FAILED' as const) {
     console.error('Token refresh failed');
     localStorage.removeItem('zeno-auth-token');
     window.location.href = '/login/referrer';
