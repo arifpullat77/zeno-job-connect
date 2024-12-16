@@ -25,7 +25,7 @@ export const supabase = createClient<Database>(
 );
 
 // Handle auth state changes
-supabase.auth.onAuthStateChange((event: 'SIGNED_IN' | 'SIGNED_OUT' | 'TOKEN_REFRESHED' | 'TOKEN_REFRESH_FAILED', session) => {
+supabase.auth.onAuthStateChange(async (event, session) => {
   if (event === 'TOKEN_REFRESHED') {
     console.log('Token was refreshed successfully');
   }
@@ -34,7 +34,6 @@ supabase.auth.onAuthStateChange((event: 'SIGNED_IN' | 'SIGNED_OUT' | 'TOKEN_REFR
     localStorage.removeItem('zeno-auth-token');
   }
 
-  // Handle refresh token errors and redirect to login
   if (event === 'TOKEN_REFRESH_FAILED') {
     console.error('Token refresh failed');
     localStorage.removeItem('zeno-auth-token');
