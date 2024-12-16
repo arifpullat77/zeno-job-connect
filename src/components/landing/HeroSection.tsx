@@ -25,14 +25,14 @@ export const HeroSection = () => {
               </Button>
             </Link>
           </div>
-          <div className="mt-12 max-w-3xl mx-auto">
-            <div className="aspect-w-16 aspect-h-9">
+          <div className="mt-12 max-w-4xl mx-auto px-4">
+            <div className="aspect-w-16 aspect-h-9 rounded-lg overflow-hidden shadow-xl">
               <iframe
                 src="https://www.youtube.com/embed/Egl-RzWGzbc"
                 title="Zeno Introduction Video"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
-                className="rounded-lg shadow-lg"
+                className="w-full h-full rounded-lg"
               ></iframe>
             </div>
           </div>

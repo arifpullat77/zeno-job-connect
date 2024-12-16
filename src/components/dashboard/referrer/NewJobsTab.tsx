@@ -1,10 +1,11 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Share2 } from "lucide-react";
+import { Share2, ExternalLink } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useSession } from "@supabase/auth-helpers-react";
 import { useToast } from "@/hooks/use-toast";
+import { Link } from "react-router-dom";
 
 export function NewJobsTab() {
   const session = useSession();
@@ -35,6 +36,23 @@ export function NewJobsTab() {
     }
 
     try {
+      const { data: existingReferral } = await supabase
+        .from("referrals")
+        .select("referral_code")
+        .eq("job_id", jobId)
+        .eq("referrer_id", session.user.id)
+        .single();
+
+      if (existingReferral) {
+        const referralLink = `${window.location.origin}/jobs/${jobId}?ref=${existingReferral.referral_code}`;
+        await navigator.clipboard.writeText(referralLink);
+        toast({
+          title: "Link copied!",
+          description: "Share this link with potential candidates",
+        });
+        return;
+      }
+
       const referralCode = crypto.randomUUID();
       const { error } = await supabase.from("referrals").insert({
         job_id: jobId,
@@ -72,7 +90,7 @@ export function NewJobsTab() {
               <TableHead>location</TableHead>
               <TableHead>salary</TableHead>
               <TableHead>referral bonus</TableHead>
-              <TableHead>action</TableHead>
+              <TableHead>actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -84,15 +102,27 @@ export function NewJobsTab() {
                 <TableCell>{job.salary}</TableCell>
                 <TableCell>${job.referral_bonus}</TableCell>
                 <TableCell>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="flex items-center gap-2"
-                    onClick={() => handleShare(job.id)}
-                  >
-                    <Share2 className="h-4 w-4" />
-                    Share
-                  </Button>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="flex items-center gap-2"
+                      onClick={() => handleShare(job.id)}
+                    >
+                      <Share2 className="h-4 w-4" />
+                      Share
+                    </Button>
+                    <Link to={`/jobs/${job.id}`}>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="flex items-center gap-2"
+                      >
+                        <ExternalLink className="h-4 w-4" />
+                        View Job
+                      </Button>
+                    </Link>
+                  </div>
                 </TableCell>
               </TableRow>
             ))}
