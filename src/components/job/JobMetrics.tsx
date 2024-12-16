@@ -10,11 +10,11 @@ export function JobMetrics({ salary, referralBonus }: JobMetricsProps) {
     <div className="flex flex-wrap gap-3 md:gap-4">
       <div className="flex items-center gap-1">
         <DollarSign className="h-4 w-4 text-[#10b981]" />
-        <span className="text-sm font-medium">{salary}</span>
+        <span className="text-sm font-medium">Salary ${salary}</span>
       </div>
       <div className="flex items-center gap-1">
         <DollarSign className="h-4 w-4 text-[#10b981]" />
-        <span className="text-sm font-medium">${referralBonus} bonus</span>
+        <span className="text-sm font-medium">Referral bonus ${referralBonus}</span>
       </div>
     </div>
   );

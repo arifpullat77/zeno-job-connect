@@ -129,35 +129,33 @@ export default function JobDetails() {
         <div className="max-w-2xl mx-auto space-y-8">
           <JobCard job={job} showReferButton={false} />
           
-          {!referralCode && (
-            <Card className="bg-secondary border-0">
-              <CardContent className="p-6 space-y-6">
-                <div className="space-y-4">
-                  <h3 className="text-2xl font-bold lowercase">turn sharing into earning</h3>
-                  <p className="text-muted-foreground">Share this job with your network and earn rewards when your referrals get hired!</p>
-                  <ul className="space-y-3 text-foreground/60">
-                    <li className="flex items-center gap-2">
-                      <Share2 className="h-4 w-4 text-[#10b981]" />
-                      Share job openings with your network
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <UserCheck className="h-4 w-4 text-[#10b981]" />
-                      Track who applies through your personalized links
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <DollarSign className="h-4 w-4 text-[#10b981]" />
-                      Earn ${job.referral_bonus} when your referral gets hired
-                    </li>
-                  </ul>
-                  <Link to="/signup/referrer">
-                    <Button className="w-full bg-[#10b981] hover:bg-[#0d9668] text-black lowercase">
-                      start earning today!
-                    </Button>
-                  </Link>
-                </div>
-              </CardContent>
-            </Card>
-          )}
+          <Card className="bg-secondary border-0">
+            <CardContent className="p-6 space-y-6">
+              <div className="space-y-4">
+                <h3 className="text-2xl font-bold lowercase">turn sharing into earning</h3>
+                <p className="text-muted-foreground">Share this job with your network and earn rewards when your referrals get hired!</p>
+                <ul className="space-y-3 text-foreground/60">
+                  <li className="flex items-center gap-2">
+                    <Share2 className="h-4 w-4 text-[#10b981]" />
+                    Share job openings with your network
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <UserCheck className="h-4 w-4 text-[#10b981]" />
+                    Track who applies through your personalized links
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <DollarSign className="h-4 w-4 text-[#10b981]" />
+                    Earn ${job.referral_bonus} when your referral gets hired
+                  </li>
+                </ul>
+                <Link to="/signup/referrer">
+                  <Button className="w-full bg-[#10b981] hover:bg-[#0d9668] text-black lowercase">
+                    start earning today!
+                  </Button>
+                </Link>
+              </div>
+            </CardContent>
+          </Card>
 
           <div className="bg-card p-6 rounded-lg border">
             <h2 className="text-xl font-semibold mb-6 lowercase">apply for this position</h2>

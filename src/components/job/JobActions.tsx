@@ -19,7 +19,7 @@ export function JobActions({ jobId, showReferButton, onShare, isMobile }: JobAct
           className="w-full md:w-auto border-[#10b981] text-[#10b981] hover:bg-[#10b981]/10"
         >
           <Send className="h-4 w-4 mr-2" />
-          Apply
+          Apply/View
         </Button>
       </Link>
       {showReferButton && (
