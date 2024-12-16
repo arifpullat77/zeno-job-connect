@@ -35,7 +35,7 @@ supabase.auth.onAuthStateChange((event, session) => {
   }
 
   // Handle refresh token errors
-  if (event === 'TOKEN_REFRESH_FAILED') {
+  if (event === 'USER_DELETED' || event === 'SIGNED_OUT') {
     console.error('Token refresh failed');
     localStorage.removeItem('zeno-auth-token');
     window.location.href = '/login/referrer';
