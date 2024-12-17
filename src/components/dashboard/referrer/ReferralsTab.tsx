@@ -78,7 +78,7 @@ export function ReferralsTab() {
                       <p className="text-sm text-gray-600">
                         Recruiter: {application.job?.recruiter?.email}
                       </p>
-                      <Alert variant="info" className="bg-blue-50">
+                      <Alert variant="default" className="bg-blue-50">
                         <AlertCircle className="h-4 w-4" />
                         <AlertDescription className="text-xs">
                           You can contact the recruiter to avail your referral bonus. At this point we do not handle payment processing. We are working on it.

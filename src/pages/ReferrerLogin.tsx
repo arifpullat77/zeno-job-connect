@@ -67,12 +67,27 @@ export default function ReferrerLogin() {
               label: {
                 color: 'white',
               },
+              message: {
+                color: 'hsl(var(--destructive))',
+              },
             },
           }}
           providers={[]}
           redirectTo={`${window.location.origin}/dashboard`}
           onlyThirdPartyProviders={false}
           view="sign_in"
+          localization={{
+            variables: {
+              sign_in: {
+                email_label: 'Email',
+                password_label: 'Password',
+                button_label: 'Sign in',
+                loading_button_label: 'Signing in...',
+                social_provider_text: 'Sign in with {{provider}}',
+                link_text: "Already have an account? Sign in",
+              },
+            },
+          }}
         />
         <div className="mt-4 text-center text-sm text-muted-foreground">
           Are you a recruiter? <Link to="/login/recruiter" className="text-primary hover:underline">Login here</Link>
