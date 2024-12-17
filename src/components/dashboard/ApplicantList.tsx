@@ -1,11 +1,10 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useSession } from "@supabase/auth-helpers-react";
 import { useState } from "react";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 
 export function ApplicantList() {
   const session = useSession();
@@ -16,6 +15,7 @@ export function ApplicantList() {
   const { data: applications } = useQuery({
     queryKey: ["applications", session?.user?.id],
     queryFn: async () => {
+      console.log("Fetching applications for user:", session?.user?.id);
       const { data, error } = await supabase
         .from("applications")
         .select(`
@@ -31,7 +31,12 @@ export function ApplicantList() {
         `)
         .eq("job.recruiter_id", session?.user?.id);
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error fetching applications:", error);
+        throw error;
+      }
+      
+      console.log("Fetched applications:", data);
       
       // Sort applications to move rejected ones to the bottom
       return data?.sort((a, b) => {
@@ -134,7 +139,7 @@ export function ApplicantList() {
                 <TableCell>{application.applicant_name}</TableCell>
                 <TableCell>{application.job?.title}</TableCell>
                 <TableCell>
-                  {application.referral?.referrer?.full_name || "Direct Application"}
+                  {application.referral?.[0]?.referrer?.email || "Direct Application"}
                 </TableCell>
                 <TableCell>{new Date(application.created_at!).toLocaleDateString()}</TableCell>
                 <TableCell>
