@@ -1,14 +1,17 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useSession } from "@supabase/auth-helpers-react";
 import { useState } from "react";
+import { useToast } from "@/components/ui/use-toast";
 
 export function ApplicantList() {
   const session = useSession();
   const [selectedJob, setSelectedJob] = useState<string>("all");
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   const { data: applications } = useQuery({
     queryKey: ["applications", session?.user?.id],
@@ -53,6 +56,31 @@ export function ApplicantList() {
     },
     enabled: !!session?.user?.id,
   });
+
+  const updateApplicationStatus = async (applicationId: string, newStatus: string) => {
+    try {
+      const { error } = await supabase
+        .from("applications")
+        .update({ status: newStatus })
+        .eq("id", applicationId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Status updated",
+        description: `Application status has been updated to ${newStatus}`,
+      });
+
+      // Invalidate the applications query to refresh the data
+      queryClient.invalidateQueries({ queryKey: ["applications"] });
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to update application status",
+      });
+    }
+  };
 
   const filteredApplications = applications?.filter(
     (application) => selectedJob === "all" || application.job_id === selectedJob
@@ -110,9 +138,20 @@ export function ApplicantList() {
                 </TableCell>
                 <TableCell>{new Date(application.created_at!).toLocaleDateString()}</TableCell>
                 <TableCell>
-                  <Badge className={getStatusColor(application.status || "")}>
-                    {application.status}
-                  </Badge>
+                  <Select
+                    value={application.status || ""}
+                    onValueChange={(value) => updateApplicationStatus(application.id, value)}
+                  >
+                    <SelectTrigger className={`w-[130px] ${getStatusColor(application.status || "")}`}>
+                      <SelectValue>{application.status}</SelectValue>
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="applied">applied</SelectItem>
+                      <SelectItem value="interviewing">interviewing</SelectItem>
+                      <SelectItem value="hired">hired</SelectItem>
+                      <SelectItem value="rejected">rejected</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </TableCell>
               </TableRow>
             ))}
