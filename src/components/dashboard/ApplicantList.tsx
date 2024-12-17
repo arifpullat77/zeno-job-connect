@@ -59,7 +59,12 @@ export function ApplicantList() {
         .from("applications")
         .select(`
           *,
-          job:jobs(*),
+          job:jobs(
+            *,
+            recruiter:profiles(
+              email
+            )
+          ),
           referral:referrals(
             *,
             referrer:profiles(
