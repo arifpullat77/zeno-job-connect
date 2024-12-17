@@ -6,6 +6,7 @@ import { useEffect } from "react";
 import { Zap } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
+import { AuthError } from "@supabase/supabase-js";
 
 export default function ReferrerLogin() {
   const navigate = useNavigate();
@@ -13,7 +14,7 @@ export default function ReferrerLogin() {
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === 'USER_DELETED' || event === 'SIGNED_OUT') {
+      if (event === "SIGNED_OUT") {
         navigate('/login/referrer');
         return;
       }
@@ -42,14 +43,6 @@ export default function ReferrerLogin() {
 
     return () => subscription.unsubscribe();
   }, [navigate, toast]);
-
-  const handleError = (error: Error) => {
-    toast({
-      variant: "destructive",
-      title: "Login Failed",
-      description: "Invalid email or password. Please try again.",
-    });
-  };
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-md">
@@ -101,7 +94,6 @@ export default function ReferrerLogin() {
               },
             },
           }}
-          onError={handleError}
         />
         <div className="mt-4 text-center text-sm text-muted-foreground">
           Are you a recruiter? <Link to="/login/recruiter" className="text-primary hover:underline">Login here</Link>
