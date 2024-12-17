@@ -3,6 +3,8 @@ import { Badge } from "@/components/ui/badge";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useSession } from "@supabase/auth-helpers-react";
+import { AlertCircle } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export function ReferralsTab() {
   const session = useSession();
@@ -15,7 +17,12 @@ export function ReferralsTab() {
         .select(`
           *,
           referral:referrals(*),
-          job:jobs(*)
+          job:jobs(
+            *,
+            recruiter:profiles(
+              email
+            )
+          )
         `)
         .eq("referrals.referrer_id", session?.user?.id);
 
@@ -50,6 +57,7 @@ export function ReferralsTab() {
               <TableHead>company</TableHead>
               <TableHead>applied date</TableHead>
               <TableHead>status</TableHead>
+              <TableHead>recruiter contact</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -58,11 +66,26 @@ export function ReferralsTab() {
                 <TableCell>{application.applicant_name}</TableCell>
                 <TableCell>{application.job?.title}</TableCell>
                 <TableCell>{application.job?.company}</TableCell>
-                <TableCell>{new Date(application.created_at).toLocaleDateString()}</TableCell>
+                <TableCell>{new Date(application.created_at!).toLocaleDateString()}</TableCell>
                 <TableCell>
-                  <Badge className={getStatusColor(application.status)}>
+                  <Badge className={getStatusColor(application.status || "")}>
                     {application.status}
                   </Badge>
+                </TableCell>
+                <TableCell>
+                  {application.status === "hired" && (
+                    <div className="space-y-2">
+                      <p className="text-sm text-gray-600">
+                        Recruiter: {application.job?.recruiter?.email}
+                      </p>
+                      <Alert variant="info" className="bg-blue-50">
+                        <AlertCircle className="h-4 w-4" />
+                        <AlertDescription className="text-xs">
+                          You can contact the recruiter to avail your referral bonus. At this point we do not handle payment processing. We are working on it.
+                        </AlertDescription>
+                      </Alert>
+                    </div>
+                  )}
                 </TableCell>
               </TableRow>
             ))}

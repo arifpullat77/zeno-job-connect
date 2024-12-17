@@ -1,70 +1,23 @@
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useSession } from "@supabase/auth-helpers-react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { useState } from "react";
 
 export function ApplicantList() {
-  const { toast } = useToast();
   const session = useSession();
-  const [selectedJobId, setSelectedJobId] = useState<string>('all');
+  const [selectedJob, setSelectedJob] = useState<string>("all");
 
-  const { data: jobs } = useQuery({
-    queryKey: ["recruiter-jobs", session?.user?.id],
+  const { data: applications } = useQuery({
+    queryKey: ["applications", session?.user?.id],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("jobs")
-        .select("id, title")
-        .eq("recruiter_id", session?.user?.id);
-
-      if (error) throw error;
-      return data;
-    },
-    enabled: !!session?.user?.id,
-  });
-
-  const { data: applications, isLoading } = useQuery({
-    queryKey: ["applications", session?.user?.id, selectedJobId],
-    queryFn: async () => {
-      const { data: recruiterJobs, error: jobsError } = await supabase
-        .from("jobs")
-        .select("id")
-        .eq("recruiter_id", session?.user?.id);
-
-      if (jobsError) throw jobsError;
-      if (!recruiterJobs?.length) return [];
-
-      const jobIds = selectedJobId === 'all' 
-        ? recruiterJobs.map(job => job.id)
-        : [selectedJobId];
-      
       const { data, error } = await supabase
         .from("applications")
         .select(`
           *,
-          job:jobs(
-            *,
-            recruiter:profiles(
-              email
-            )
-          ),
+          job:jobs(*),
           referral:referrals(
             *,
             referrer:profiles(
@@ -73,9 +26,27 @@ export function ApplicantList() {
             )
           )
         `)
-        .in("job_id", jobIds)
-        .order("status", { ascending: false }) // This will put rejected at the bottom
-        .order("created_at", { ascending: false });
+        .eq("job.recruiter_id", session?.user?.id);
+
+      if (error) throw error;
+      
+      // Sort applications to move rejected ones to the bottom
+      return data?.sort((a, b) => {
+        if (a.status === "rejected" && b.status !== "rejected") return 1;
+        if (a.status !== "rejected" && b.status === "rejected") return -1;
+        return 0;
+      });
+    },
+    enabled: !!session?.user?.id,
+  });
+
+  const { data: jobs } = useQuery({
+    queryKey: ["recruiter-jobs", session?.user?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("jobs")
+        .select("*")
+        .eq("recruiter_id", session?.user?.id);
 
       if (error) throw error;
       return data;
@@ -83,41 +54,9 @@ export function ApplicantList() {
     enabled: !!session?.user?.id,
   });
 
-  const handleStatusChange = async (applicantId: string, newStatus: string) => {
-    try {
-      const { error } = await supabase
-        .from("applications")
-        .update({ status: newStatus })
-        .eq("id", applicantId);
-
-      if (error) throw error;
-
-      toast({
-        title: "Status Updated",
-        description: `Applicant status changed to ${newStatus}`,
-      });
-    } catch (error) {
-      console.error("Error updating status:", error);
-      toast({
-        title: "Error",
-        description: "Failed to update status. Please try again.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const handleDownloadResume = (resumeUrl: string, applicantName: string) => {
-    if (!resumeUrl) {
-      toast({
-        title: "Resume Not Available",
-        description: "This applicant has not uploaded a resume.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    window.open(resumeUrl, "_blank");
-  };
+  const filteredApplications = applications?.filter(
+    (application) => selectedJob === "all" || application.job_id === selectedJob
+  );
 
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
@@ -132,21 +71,11 @@ export function ApplicantList() {
     }
   };
 
-  if (isLoading) {
-    return <div>Loading applications...</div>;
-  }
-
-  if (!applications?.length) {
-    return <div className="text-muted-foreground">No applications found yet.</div>;
-  }
-
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-4">
-        <Select
-          value={selectedJobId}
-          onValueChange={(value) => setSelectedJobId(value)}
-        >
+      <div className="flex justify-between items-center">
+        <h2 className="text-xl font-semibold lowercase">applicant tracking</h2>
+        <Select value={selectedJob} onValueChange={setSelectedJob}>
           <SelectTrigger className="w-[200px]">
             <SelectValue placeholder="Filter by job" />
           </SelectTrigger>
@@ -160,89 +89,30 @@ export function ApplicantList() {
           </SelectContent>
         </Select>
       </div>
-
       <div className="rounded-md border">
         <Table>
           <TableHeader>
             <TableRow>
               <TableHead>name</TableHead>
-              <TableHead>email</TableHead>
-              <TableHead>job</TableHead>
+              <TableHead>job title</TableHead>
               <TableHead>referrer</TableHead>
-              <TableHead>resume</TableHead>
+              <TableHead>applied date</TableHead>
               <TableHead>status</TableHead>
-              <TableHead>actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {applications.map((application) => (
+            {filteredApplications?.map((application) => (
               <TableRow key={application.id}>
                 <TableCell>{application.applicant_name}</TableCell>
-                <TableCell>{application.applicant_email}</TableCell>
                 <TableCell>{application.job?.title}</TableCell>
                 <TableCell>
-                  {application.referral?.referrer ? (
-                    <div className="space-y-1">
-                      <div>{application.referral.referrer.full_name}</div>
-                      <div className="text-sm text-muted-foreground">
-                        {application.referral.referrer.email}
-                      </div>
-                      {application.status === 'hired' && (
-                        <div className="text-sm text-[#10b981]">
-                          Contact recruiter at: {application.job?.recruiter?.email}
-                          <p className="text-xs text-muted-foreground mt-1">
-                            You can contact the recruiter to avail your referral bonus. 
-                            At this point we do not handle payment processing. We are working on it.
-                          </p>
-                        </div>
-                      )}
-                    </div>
-                  ) : (
-                    <span className="text-muted-foreground">Direct application</span>
-                  )}
+                  {application.referral?.referrer?.full_name || "Direct Application"}
                 </TableCell>
+                <TableCell>{new Date(application.created_at!).toLocaleDateString()}</TableCell>
                 <TableCell>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleDownloadResume(application.resume_url || "", application.applicant_name)}
-                    className="lowercase"
-                  >
-                    download pdf
-                  </Button>
-                </TableCell>
-                <TableCell>
-                  <Badge className={getStatusColor(application.status || "applied")}>
-                    {application.status || "applied"}
+                  <Badge className={getStatusColor(application.status || "")}>
+                    {application.status}
                   </Badge>
-                </TableCell>
-                <TableCell>
-                  <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleStatusChange(application.id, "interviewing")}
-                      className="lowercase"
-                    >
-                      interviewing
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleStatusChange(application.id, "hired")}
-                      className="lowercase"
-                    >
-                      hired
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleStatusChange(application.id, "rejected")}
-                      className="lowercase text-destructive"
-                    >
-                      reject
-                    </Button>
-                  </div>
                 </TableCell>
               </TableRow>
             ))}
