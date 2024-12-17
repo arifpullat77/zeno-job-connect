@@ -12,27 +12,48 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useState } from "react";
 
 export function ApplicantList() {
   const { toast } = useToast();
   const session = useSession();
+  const [selectedJobId, setSelectedJobId] = useState<string>('all');
+
+  const { data: jobs } = useQuery({
+    queryKey: ["recruiter-jobs", session?.user?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("jobs")
+        .select("id, title")
+        .eq("recruiter_id", session?.user?.id);
+
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!session?.user?.id,
+  });
 
   const { data: applications, isLoading } = useQuery({
-    queryKey: ["applications", session?.user?.id],
+    queryKey: ["applications", session?.user?.id, selectedJobId],
     queryFn: async () => {
-      // First get the recruiter's jobs
       const { data: recruiterJobs, error: jobsError } = await supabase
         .from("jobs")
         .select("id")
         .eq("recruiter_id", session?.user?.id);
 
       if (jobsError) throw jobsError;
-
-      // If recruiter has no jobs, return empty array
       if (!recruiterJobs?.length) return [];
 
-      // Get applications only for the recruiter's jobs
-      const jobIds = recruiterJobs.map(job => job.id);
+      const jobIds = selectedJobId === 'all' 
+        ? recruiterJobs.map(job => job.id)
+        : [selectedJobId];
       
       const { data, error } = await supabase
         .from("applications")
@@ -48,6 +69,7 @@ export function ApplicantList() {
           )
         `)
         .in("job_id", jobIds)
+        .order("status", { ascending: false }) // This will put rejected at the bottom
         .order("created_at", { ascending: false });
 
       if (error) throw error;
@@ -114,84 +136,114 @@ export function ApplicantList() {
   }
 
   return (
-    <div className="rounded-md border">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>name</TableHead>
-            <TableHead>email</TableHead>
-            <TableHead>job</TableHead>
-            <TableHead>referrer</TableHead>
-            <TableHead>resume</TableHead>
-            <TableHead>status</TableHead>
-            <TableHead>actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {applications.map((application) => (
-            <TableRow key={application.id}>
-              <TableCell>{application.applicant_name}</TableCell>
-              <TableCell>{application.applicant_email}</TableCell>
-              <TableCell>{application.job?.title}</TableCell>
-              <TableCell>
-                {application.referral?.referrer ? (
-                  <div className="space-y-1">
-                    <div>{application.referral.referrer.full_name}</div>
-                    <div className="text-sm text-muted-foreground">
-                      {application.referral.referrer.email}
-                    </div>
-                  </div>
-                ) : (
-                  <span className="text-muted-foreground">Direct application</span>
-                )}
-              </TableCell>
-              <TableCell>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleDownloadResume(application.resume_url || "", application.applicant_name)}
-                  className="lowercase"
-                >
-                  download pdf
-                </Button>
-              </TableCell>
-              <TableCell>
-                <Badge className={getStatusColor(application.status || "applied")}>
-                  {application.status || "applied"}
-                </Badge>
-              </TableCell>
-              <TableCell>
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleStatusChange(application.id, "interviewing")}
-                    className="lowercase"
-                  >
-                    interviewing
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleStatusChange(application.id, "hired")}
-                    className="lowercase"
-                  >
-                    hired
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleStatusChange(application.id, "rejected")}
-                    className="lowercase text-destructive"
-                  >
-                    reject
-                  </Button>
-                </div>
-              </TableCell>
+    <div className="space-y-4">
+      <div className="flex items-center gap-4">
+        <Select
+          value={selectedJobId}
+          onValueChange={(value) => setSelectedJobId(value)}
+        >
+          <SelectTrigger className="w-[200px]">
+            <SelectValue placeholder="Filter by job" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Jobs</SelectItem>
+            {jobs?.map((job) => (
+              <SelectItem key={job.id} value={job.id}>
+                {job.title}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div className="rounded-md border">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>name</TableHead>
+              <TableHead>email</TableHead>
+              <TableHead>job</TableHead>
+              <TableHead>referrer</TableHead>
+              <TableHead>resume</TableHead>
+              <TableHead>status</TableHead>
+              <TableHead>actions</TableHead>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+          </TableHeader>
+          <TableBody>
+            {applications.map((application) => (
+              <TableRow key={application.id}>
+                <TableCell>{application.applicant_name}</TableCell>
+                <TableCell>{application.applicant_email}</TableCell>
+                <TableCell>{application.job?.title}</TableCell>
+                <TableCell>
+                  {application.referral?.referrer ? (
+                    <div className="space-y-1">
+                      <div>{application.referral.referrer.full_name}</div>
+                      <div className="text-sm text-muted-foreground">
+                        {application.referral.referrer.email}
+                      </div>
+                      {application.status === 'hired' && (
+                        <div className="text-sm text-[#10b981]">
+                          Contact recruiter at: {application.job?.recruiter?.email}
+                          <p className="text-xs text-muted-foreground mt-1">
+                            You can contact the recruiter to avail your referral bonus. 
+                            At this point we do not handle payment processing. We are working on it.
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <span className="text-muted-foreground">Direct application</span>
+                  )}
+                </TableCell>
+                <TableCell>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleDownloadResume(application.resume_url || "", application.applicant_name)}
+                    className="lowercase"
+                  >
+                    download pdf
+                  </Button>
+                </TableCell>
+                <TableCell>
+                  <Badge className={getStatusColor(application.status || "applied")}>
+                    {application.status || "applied"}
+                  </Badge>
+                </TableCell>
+                <TableCell>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleStatusChange(application.id, "interviewing")}
+                      className="lowercase"
+                    >
+                      interviewing
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleStatusChange(application.id, "hired")}
+                      className="lowercase"
+                    >
+                      hired
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleStatusChange(application.id, "rejected")}
+                      className="lowercase text-destructive"
+                    >
+                      reject
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
     </div>
   );
 }

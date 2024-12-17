@@ -1,5 +1,3 @@
-import { DollarSign } from "lucide-react";
-
 interface JobMetricsProps {
   salary: string;
   referralBonus: number;
@@ -7,14 +5,14 @@ interface JobMetricsProps {
 
 export function JobMetrics({ salary, referralBonus }: JobMetricsProps) {
   return (
-    <div className="flex flex-wrap gap-3 md:gap-4">
-      <div className="flex items-center gap-1">
-        <DollarSign className="h-4 w-4 text-[#10b981]" />
-        <span className="text-sm font-medium">Salary ${salary}</span>
+    <div className="flex flex-wrap gap-4">
+      <div className="flex items-center gap-2">
+        <span className="text-muted-foreground">Salary:</span>
+        <span className="font-medium">${salary}</span>
       </div>
-      <div className="flex items-center gap-1">
-        <DollarSign className="h-4 w-4 text-[#10b981]" />
-        <span className="text-sm font-medium">Referral bonus ${referralBonus}</span>
+      <div className="flex items-center gap-2">
+        <span className="text-muted-foreground">Referral bonus:</span>
+        <span className="font-medium">${referralBonus}</span>
       </div>
     </div>
   );

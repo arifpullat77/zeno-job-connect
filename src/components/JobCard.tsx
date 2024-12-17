@@ -80,6 +80,8 @@ export function JobCard({ job, showReferButton = true }: JobCardProps) {
           company={job.company}
           location={job.location}
           status={job.status}
+          jobId={job.id}
+          recruiterId={job.recruiter_id}
         />
       </CardHeader>
       <CardContent>
