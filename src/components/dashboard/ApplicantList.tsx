@@ -106,6 +106,14 @@ export function ApplicantList() {
     }
   };
 
+  const getReferrerEmail = (application: any) => {
+    if (!application.referral || application.referral.length === 0) {
+      return "Direct Application";
+    }
+    const referrer = application.referral[0]?.referrer;
+    return referrer?.email || "Unknown Referrer";
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
@@ -148,7 +156,7 @@ export function ApplicantList() {
                 <TableCell>{application.location || "N/A"}</TableCell>
                 <TableCell>{application.job?.title}</TableCell>
                 <TableCell>
-                  {application.referral?.[0]?.referrer?.email || "Direct Application"}
+                  {getReferrerEmail(application)}
                 </TableCell>
                 <TableCell>
                   {application.resume_url ? (
