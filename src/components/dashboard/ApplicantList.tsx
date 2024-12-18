@@ -5,6 +5,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useSession } from "@supabase/auth-helpers-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { FileText } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export function ApplicantList() {
   const session = useSession();
@@ -127,8 +129,12 @@ export function ApplicantList() {
           <TableHeader>
             <TableRow>
               <TableHead>name</TableHead>
+              <TableHead>email</TableHead>
+              <TableHead>phone</TableHead>
+              <TableHead>location</TableHead>
               <TableHead>job title</TableHead>
               <TableHead>referrer</TableHead>
+              <TableHead>resume</TableHead>
               <TableHead>applied date</TableHead>
               <TableHead>status</TableHead>
             </TableRow>
@@ -137,9 +143,27 @@ export function ApplicantList() {
             {filteredApplications?.map((application) => (
               <TableRow key={application.id}>
                 <TableCell>{application.applicant_name}</TableCell>
+                <TableCell>{application.applicant_email}</TableCell>
+                <TableCell>{application.phone_number || "N/A"}</TableCell>
+                <TableCell>{application.location || "N/A"}</TableCell>
                 <TableCell>{application.job?.title}</TableCell>
                 <TableCell>
                   {application.referral?.[0]?.referrer?.email || "Direct Application"}
+                </TableCell>
+                <TableCell>
+                  {application.resume_url ? (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => window.open(application.resume_url, '_blank')}
+                      className="flex items-center gap-2"
+                    >
+                      <FileText className="h-4 w-4" />
+                      View
+                    </Button>
+                  ) : (
+                    "No resume"
+                  )}
                 </TableCell>
                 <TableCell>{new Date(application.created_at!).toLocaleDateString()}</TableCell>
                 <TableCell>
