@@ -107,11 +107,11 @@ export function ApplicantList() {
   };
 
   const getReferrerEmail = (application: any) => {
-    if (!application.referral || application.referral.length === 0) {
-      return "Direct Application";
+    // Check if there's a referral and it has a referrer
+    if (application.referral && application.referral[0]?.referrer) {
+      return application.referral[0].referrer.email;
     }
-    const referrer = application.referral[0]?.referrer;
-    return referrer?.email || "Unknown Referrer";
+    return "Direct Application";
   };
 
   return (
@@ -155,9 +155,7 @@ export function ApplicantList() {
                 <TableCell>{application.phone_number || "N/A"}</TableCell>
                 <TableCell>{application.location || "N/A"}</TableCell>
                 <TableCell>{application.job?.title}</TableCell>
-                <TableCell>
-                  {getReferrerEmail(application)}
-                </TableCell>
+                <TableCell>{getReferrerEmail(application)}</TableCell>
                 <TableCell>
                   {application.resume_url ? (
                     <Button
