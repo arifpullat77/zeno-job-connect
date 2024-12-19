@@ -13,7 +13,12 @@ interface Application {
   status: string;
   created_at: string;
   job?: { title: string };
-  referral?: Array<{ referrer?: { email?: string } }>;
+  referral?: {
+    referrer: {
+      full_name: string;
+      email: string;
+    };
+  };
 }
 
 interface ApplicationsTableProps {
@@ -23,8 +28,8 @@ interface ApplicationsTableProps {
 
 export function ApplicationsTable({ applications, onStatusChange }: ApplicationsTableProps) {
   const getReferrerEmail = (application: Application) => {
-    if (application.referral?.[0]?.referrer?.email) {
-      return application.referral[0].referrer.email;
+    if (application.referral?.referrer?.email) {
+      return application.referral.referrer.email;
     }
     return "Direct Application";
   };
