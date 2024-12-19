@@ -107,8 +107,7 @@ export function ApplicantList() {
   };
 
   const getReferrerEmail = (application: any) => {
-    // Check if there's a referral and it has a referrer
-    if (application.referral && application.referral[0]?.referrer) {
+    if (application.referral && application.referral[0]?.referrer?.email) {
       return application.referral[0].referrer.email;
     }
     return "Direct Application";
