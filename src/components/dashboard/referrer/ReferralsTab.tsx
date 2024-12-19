@@ -9,24 +9,50 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 export function ReferralsTab() {
   const session = useSession();
 
-  const { data: referrals } = useQuery({
+  const { data: referrals, isError } = useQuery({
     queryKey: ["referrals", session?.user?.id],
     queryFn: async () => {
+      console.log("Fetching referrals for user:", session?.user?.id);
+      
+      const { data: referralData, error: referralError } = await supabase
+        .from("referrals")
+        .select("id")
+        .eq("referrer_id", session?.user?.id);
+
+      if (referralError) {
+        console.error("Error fetching referrals:", referralError);
+        throw referralError;
+      }
+
+      const referralIds = referralData.map(ref => ref.id);
+      console.log("Referral IDs for current user:", referralIds);
+
+      if (referralIds.length === 0) {
+        console.log("No referrals found for user");
+        return [];
+      }
+
       const { data, error } = await supabase
         .from("applications")
         .select(`
           *,
-          referral:referrals(*),
-          job:jobs(
+          referral:referrals(
             *,
-            recruiter:profiles(
-              email
+            referrer:profiles(
+              email,
+              full_name
             )
-          )
+          ),
+          job:jobs(*)
         `)
-        .eq("referrals.referrer_id", session?.user?.id);
+        .in("referral_id", referralIds);
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error fetching applications:", error);
+        throw error;
+      }
+
+      console.log("Fetched applications:", data);
       return data;
     },
     enabled: !!session?.user?.id,
@@ -44,6 +70,17 @@ export function ReferralsTab() {
         return "bg-blue-100 text-blue-800 hover:bg-blue-200";
     }
   };
+
+  if (isError) {
+    return (
+      <Alert variant="destructive">
+        <AlertCircle className="h-4 w-4" />
+        <AlertDescription>
+          Failed to load referrals. Please try again later.
+        </AlertDescription>
+      </Alert>
+    );
+  }
 
   return (
     <div className="space-y-4">
