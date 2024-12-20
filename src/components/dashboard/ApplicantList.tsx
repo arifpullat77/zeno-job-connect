@@ -12,11 +12,32 @@ export function ApplicantList() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: applications } = useQuery({
+  const { data: applications, isLoading: isLoadingApplications } = useQuery({
     queryKey: ["applications", session?.user?.id],
     queryFn: async () => {
-      console.log("Fetching applications for user:", session?.user?.id);
-      const { data, error } = await supabase
+      console.log("Fetching applications for recruiter:", session?.user?.id);
+      
+      // First, get all jobs created by this recruiter
+      const { data: recruiterJobs, error: jobsError } = await supabase
+        .from("jobs")
+        .select("id")
+        .eq("recruiter_id", session?.user?.id);
+
+      if (jobsError) {
+        console.error("Error fetching recruiter jobs:", jobsError);
+        throw jobsError;
+      }
+
+      if (!recruiterJobs?.length) {
+        console.log("No jobs found for recruiter");
+        return [];
+      }
+
+      const jobIds = recruiterJobs.map(job => job.id);
+      console.log("Recruiter job IDs:", jobIds);
+
+      // Then fetch applications only for these jobs
+      const { data: applications, error: applicationsError } = await supabase
         .from("applications")
         .select(`
           *,
@@ -29,16 +50,16 @@ export function ApplicantList() {
             )
           )
         `)
-        .eq("job.recruiter_id", session?.user?.id);
+        .in("job_id", jobIds);
 
-      if (error) {
-        console.error("Error fetching applications:", error);
-        throw error;
+      if (applicationsError) {
+        console.error("Error fetching applications:", applicationsError);
+        throw applicationsError;
       }
       
-      console.log("Fetched applications:", data);
+      console.log("Fetched applications:", applications);
       
-      return data?.sort((a, b) => {
+      return applications?.sort((a, b) => {
         if (a.status === "rejected" && b.status !== "rejected") return 1;
         if (a.status !== "rejected" && b.status === "rejected") return -1;
         return 0;
@@ -84,6 +105,10 @@ export function ApplicantList() {
       });
     }
   };
+
+  if (isLoadingApplications) {
+    return <div>Loading applications...</div>;
+  }
 
   const filteredApplications = applications?.filter(
     (application) => selectedJob === "all" || application.job_id === selectedJob
