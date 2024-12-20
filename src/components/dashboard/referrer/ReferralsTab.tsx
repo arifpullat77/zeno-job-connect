@@ -118,11 +118,14 @@ export function ReferralsTab() {
                 <TableCell>
                   {application.status === "hired" && (
                     <div className="space-y-2">
-                      <p className="text-sm text-gray-600">
+                      <p className="text-sm font-medium text-[#9b87f5]">
                         Recruiter: {application.job?.recruiter?.email}
                       </p>
-                      <Alert variant="default" className="bg-blue-50">
-                        <AlertCircle className="h-4 w-4" />
+                      <Alert 
+                        variant="default" 
+                        className="bg-[#E5DEFF] border-[#9b87f5]/20 text-[#6E59A5]"
+                      >
+                        <AlertCircle className="h-4 w-4 text-[#7E69AB]" />
                         <AlertDescription className="text-xs">
                           You can contact the recruiter to avail your referral bonus. At this point we do not handle payment processing. We are working on it.
                         </AlertDescription>
