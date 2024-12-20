@@ -43,7 +43,13 @@ export function ReferralsTab() {
               full_name
             )
           ),
-          job:jobs(*)
+          job:jobs(
+            *,
+            recruiter:profiles(
+              email,
+              full_name
+            )
+          )
         `)
         .in("referral_id", referralIds);
 
