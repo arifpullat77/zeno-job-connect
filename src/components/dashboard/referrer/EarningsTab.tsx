@@ -18,12 +18,15 @@ export function EarningsTab() {
         .from("applications")
         .select(`
           *,
-          referral:referrals(*),
+          referral:referrals!inner(*),
           job:jobs(*)
         `)
         .eq("referrals.referrer_id", session?.user?.id);
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error fetching referrals:", error);
+        throw error;
+      }
       return data;
     },
     enabled: !!session?.user?.id,
